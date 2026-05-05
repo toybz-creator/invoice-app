@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test.describe("Phase 1 route shells", () => {
+test.describe("public and protected route shells", () => {
   test("renders the public home page and links to auth", async ({ page }) => {
     await page.goto("/");
 
@@ -15,21 +15,23 @@ test.describe("Phase 1 route shells", () => {
     );
   });
 
-  test("renders auth and dashboard route shells", async ({ page }) => {
+  test("renders auth routes and protects dashboard routes", async ({
+    page,
+  }) => {
     await page.goto("/login");
-    await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Welcome back" }),
+    ).toBeVisible();
 
     await page.goto("/signup");
     await expect(
-      page.getByRole("heading", { name: "Create account" }),
+      page.getByRole("heading", { name: "Create new account" }),
     ).toBeVisible();
 
     await page.goto("/dashboard");
-    await expect(
-      page.getByRole("heading", { name: "Financial overview" }),
-    ).toBeVisible();
+    await expect(page).toHaveURL(/\/login\?next=%2Fdashboard/);
 
     await page.goto("/invoices");
-    await expect(page.getByRole("heading", { name: "Invoices" })).toBeVisible();
+    await expect(page).toHaveURL(/\/login\?next=%2Finvoices/);
   });
 });

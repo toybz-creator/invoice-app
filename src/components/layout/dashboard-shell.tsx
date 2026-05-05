@@ -1,6 +1,9 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { logoutAction } from "@/app/actions/auth.actions";
+import { Button } from "@/components/ui/button";
+
 const navItems = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/invoices", label: "Invoices" },
@@ -14,20 +17,27 @@ export function DashboardShell({ children }: { children: ReactNode }) {
           <Link href="/dashboard" className="font-semibold">
             Finance Dashboard
           </Link>
-          <nav
-            aria-label="Primary navigation"
-            className="flex items-center gap-1"
-          >
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+          <div className="flex items-center gap-2">
+            <nav
+              aria-label="Primary navigation"
+              className="flex items-center gap-1"
+            >
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+            <form action={logoutAction}>
+              <Button type="submit" variant="outline">
+                Log out
+              </Button>
+            </form>
+          </div>
         </div>
       </header>
       <main className="mx-auto w-full max-w-7xl px-6 py-8">{children}</main>

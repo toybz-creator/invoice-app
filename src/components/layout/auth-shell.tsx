@@ -1,24 +1,30 @@
+import Image from "next/image";
 import type { ReactNode } from "react";
 
 export function AuthShell({ children }: { children: ReactNode }) {
   return (
-    <main className="grid min-h-dvh bg-background text-foreground lg:grid-cols-[1fr_minmax(420px,540px)]">
-      <section className="hidden border-r bg-muted/30 px-10 py-12 lg:flex lg:flex-col lg:justify-between">
-        <div>
-          <p className="text-sm font-medium text-muted-foreground">
-            Finance Management Dashboard
-          </p>
-          <h2 className="mt-6 max-w-xl text-4xl font-semibold tracking-normal">
-            Secure invoice workflows for growing small businesses.
-          </h2>
+    <main className="min-h-dvh bg-white text-[#1b212d] lg:grid lg:grid-cols-[53.125%_46.875%]">
+      <section className="flex min-h-dvh flex-col px-6 py-10 sm:px-12 lg:px-[9.375vw]">
+        <div className="flex items-center gap-3">
+          <Image src="/maglo-mark.svg" alt="" width={30} height={30} priority />
+          <p className="text-lg leading-none font-bold">Maglo.</p>
         </div>
-        <p className="max-w-md text-sm leading-6 text-muted-foreground">
-          Final auth screens will follow the Maglo Figma reference while adding
-          production validation, Appwrite errors, and accessible feedback.
-        </p>
+        <div className="flex flex-1 items-center py-12">{children}</div>
       </section>
-      <section className="flex items-center justify-center px-6 py-12">
-        {children}
+
+      <section
+        aria-hidden="true"
+        className="relative hidden min-h-dvh overflow-hidden bg-[#e5e7ea] lg:block"
+      >
+        <Image
+          src="/auth-hero.png"
+          alt=""
+          fill
+          priority
+          sizes="47vw"
+          className="object-cover object-[52%_center]"
+        />
+        <div className="absolute inset-0 bg-[#1b212d]/10" />
       </section>
     </main>
   );

@@ -5,23 +5,30 @@ TailwindCSS, and Vercel.
 
 ## Current Status
 
-Phase 1 is scaffolded and Phase 2 Appwrite setup is implemented:
+Phase 1 through Phase 3 are implemented:
 
 - Next.js App Router with TypeScript strict mode and `src/`.
 - TailwindCSS v4 and ShadCN/UI initialized.
-- Route shells for `/`, `/login`, `/signup`, `/dashboard`, and `/invoices`.
+- Public `/`, auth `/login` and `/signup`, and protected `/dashboard` and
+  `/invoices` route groups.
 - Auth and dashboard route groups with shared layout components.
 - Feature and shared module folders for auth, dashboard, invoices, Appwrite,
   realtime, validation, utilities, stores, and shared types.
 - ESLint, Prettier, Vitest, and Playwright scripts.
 - Appwrite browser and server/admin client boundaries.
+- Appwrite email/password signup, login, logout, and session helpers.
+- HttpOnly Appwrite session cookie handling for server actions and middleware.
+- Next.js Proxy route protection, the current Next.js convention for
+  middleware-style dashboard and invoice route gating.
+- React Hook Form and Zod auth forms translated from the Maglo Figma sign in
+  and sign up frames, with inline errors, pending states, and toast feedback.
 - Runtime validation for required Appwrite environment variables.
 - Typed invoice document helpers with owner-scoped permissions.
 - Reproducible Appwrite database, collection, attribute, index, and permission
   setup notes.
 
-The auth flows, invoice server actions, realtime subscriptions, dashboard
-metrics, and Figma-fidelity UI implementation phases are still pending.
+Invoice server actions, realtime subscriptions, dashboard metrics, and invoice
+Figma-fidelity UI implementation phases are still pending.
 
 ## Prerequisites
 
@@ -159,10 +166,19 @@ The Appwrite helpers live under `src/lib/appwrite`:
 ```text
 config.ts       # environment parsing and validation
 client.ts       # browser-safe Appwrite client helpers
-admin.ts        # server-only node-appwrite admin client
+admin.ts        # server-only node-appwrite admin/session clients
+session.ts      # server-only Appwrite session read/write helpers
+session-cookie.ts # edge-safe session cookie name/options
 permissions.ts  # per-user invoice document permissions
 database.ts     # typed invoice document helpers
 ```
+
+Auth server actions store the Appwrite session secret in an HttpOnly cookie
+named `a_session_<NEXT_PUBLIC_APPWRITE_PROJECT_ID>`. `src/proxy.ts` checks for
+this cookie to gate `/dashboard` and `/invoices`, and server-only helpers verify
+the session with Appwrite before trusted data access. Logout deletes the current
+Appwrite session when possible and clears the local cookie before redirecting to
+`/login`.
 
 ## Design Workflow
 
@@ -176,12 +192,15 @@ Next.js, ShadCN/UI, TailwindCSS, TypeScript, and accessibility conventions, then
 verify desktop and mobile UI against the Figma screenshot when the local app can
 run.
 
-Phase 1 uses lightweight route placeholders only; the full Figma implementation
-workflow begins when the real auth, dashboard, and invoice screens are built.
+Phase 3 used the Figma workflow for the sign in node `122:1782` and sign up
+node `134:2419`, including structured design context, screenshots, and local
+asset capture. The shared auth screen uses `public/auth-hero.png`,
+`public/maglo-mark.svg`, and `public/auth-underline.svg` instead of short-lived
+Figma URLs.
 
-Browser verification for the Phase 1 route shells was intentionally skipped at
-handoff time per user request. A Playwright smoke test exists under `tests/e2e`
-for when browser checks resume.
+Browser verification is represented by the Playwright route protection smoke
+test. End-to-end credential submission still requires configured Appwrite
+environment variables and a test Appwrite project.
 
 ## Known Audit Status
 

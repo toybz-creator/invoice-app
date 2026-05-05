@@ -10,7 +10,8 @@ The core architectural rule is simple: Appwrite and server actions own persisted
 
 1. Anonymous user visits `/login` or `/signup`.
 2. User authenticates through Appwrite Auth.
-3. Next.js Middleware protects dashboard routes by checking session state.
+3. Next.js Proxy, the current middleware convention, protects dashboard routes
+   by checking session state.
 4. Dashboard pages fetch authenticated invoice data.
 5. Invoice mutations run through Next.js Server Actions.
 6. Server actions validate input, verify ownership, calculate derived financial values, and write to Appwrite.
@@ -158,6 +159,41 @@ validation and server-owned financial calculations before persistence. The
 helper enforces document ownership for get/update/delete by comparing the stored
 `userId` to the authenticated user ID passed by the caller.
 
+### 3.3 Phase 3 Authentication Status
+
+Phase 3 authentication is implemented:
+
+- `src/features/auth/schemas/auth.schema.ts` defines shared Zod login and
+  signup schemas.
+- `src/features/auth/components` contains the React Hook Form auth forms and
+  Figma-derived auth presentation components.
+- `src/app/actions/auth.actions.ts` owns signup, login, and logout server
+  actions.
+- `src/lib/appwrite/admin.ts` exposes admin and session-scoped Appwrite account
+  helpers.
+- `src/lib/appwrite/session.ts` stores, clears, and verifies Appwrite session
+  secrets through HttpOnly cookies.
+- `src/lib/appwrite/session-cookie.ts` keeps cookie naming/options reusable by
+  both server-only code and edge middleware.
+- `src/proxy.ts` protects `/dashboard` and `/invoices`, and redirects
+  authenticated users away from `/login` and `/signup`.
+
+The auth server actions use the server/admin Appwrite boundary to create users
+and email/password sessions. The returned Appwrite session secret is stored in
+an HttpOnly `a_session_<projectId>` cookie with `sameSite: "lax"`,
+production-only `secure`, root path, and the Appwrite session expiry. Proxy
+checks only for the cookie so it remains fast and Edge-compatible; server code
+must call `getAuthenticatedUser()` before trusted reads or mutations to verify
+that the cookie still maps to a valid Appwrite session.
+
+The sign in and sign up screens were implemented from the Maglo Figma nodes
+`122:1782` and `134:2419`. Required assets were captured locally under
+`public/auth-hero.png`, `public/maglo-mark.svg`, and
+`public/auth-underline.svg` so the app does not depend on short-lived Figma
+asset URLs. The implementation preserves the reference hierarchy while adding
+accessible labels, inline validation errors, disabled pending states, toast
+feedback, and responsive behavior.
+
 ## 4. Rendering Strategy
 
 - Use Server Components for route-level data reads and static shell where possible.
@@ -167,6 +203,10 @@ helper enforces document ownership for get/update/delete by comparing the stored
 - Use realtime subscriptions to keep open browser sessions updated.
 
 Phase 1 uses Server Components for route shells. Client Components should be introduced only when a later feature needs form state, dialogs, filters, charts, realtime subscriptions, or other browser-side interactivity.
+
+Phase 3 introduces Client Components for authentication forms only. Server
+actions remain the trusted auth mutation boundary, and the auth route files stay
+thin by delegating reusable behavior to `src/features/auth`.
 
 ## 5. Appwrite Architecture
 
@@ -182,6 +222,11 @@ Use these Appwrite capabilities:
 The browser uses the `appwrite` SDK. Server-only code uses `node-appwrite`
 because the server/admin boundary needs API-key authentication through
 `setKey`.
+
+For authentication, server actions use `node-appwrite` to create Appwrite users,
+create email/password sessions, and delete the current session on logout. Client
+components never receive the Appwrite session secret; they receive only typed
+success/error results from server actions.
 
 ### 5.2 Environment Variables
 
@@ -233,6 +278,20 @@ and delete permissions. Server actions must still verify ownership because
 client data cannot be trusted, and admin SDK calls can bypass Appwrite's
 document permission enforcement.
 
+### 5.5 Session Handling
+
+The local application session is an HttpOnly cookie named
+`a_session_<NEXT_PUBLIC_APPWRITE_PROJECT_ID>`. It stores the Appwrite session
+secret returned by `Account.createEmailPasswordSession()` and expires with the
+Appwrite session. The cookie name helper has an edge-safe fallback for local
+tests where Appwrite env vars are intentionally absent, but deployed
+environments must set the project ID.
+
+The route proxy uses the cookie for route gating only. Any server action that
+reads or mutates user-owned data must call the server-only session helper to
+resolve the authenticated Appwrite user and must clear the cookie if Appwrite
+rejects the session.
+
 ## 6. Financial Domain Rules
 
 All persisted calculations must happen server-side.
@@ -257,6 +316,7 @@ Use React Hook Form with Zod.
 
 Requirements:
 
+- Auth forms use shared login/signup schemas.
 - Shared schema for create and edit invoice flows.
 - Inline field errors.
 - Submit loading state.
