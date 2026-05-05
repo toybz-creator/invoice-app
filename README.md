@@ -5,7 +5,7 @@ TailwindCSS, and Vercel.
 
 ## Current Status
 
-Phase 1 is scaffolded:
+Phase 1 is scaffolded and Phase 2 Appwrite setup is implemented:
 
 - Next.js App Router with TypeScript strict mode and `src/`.
 - TailwindCSS v4 and ShadCN/UI initialized.
@@ -14,9 +14,14 @@ Phase 1 is scaffolded:
 - Feature and shared module folders for auth, dashboard, invoices, Appwrite,
   realtime, validation, utilities, stores, and shared types.
 - ESLint, Prettier, Vitest, and Playwright scripts.
+- Appwrite browser and server/admin client boundaries.
+- Runtime validation for required Appwrite environment variables.
+- Typed invoice document helpers with owner-scoped permissions.
+- Reproducible Appwrite database, collection, attribute, index, and permission
+  setup notes.
 
-The auth, invoice, Appwrite, realtime, dashboard metric, and Figma-fidelity UI
-implementation phases are still pending.
+The auth flows, invoice server actions, realtime subscriptions, dashboard
+metrics, and Figma-fidelity UI implementation phases are still pending.
 
 ## Prerequisites
 
@@ -90,7 +95,7 @@ trusted mutations under `src/app/actions`, Appwrite boundaries under
 
 ## Environment Variables
 
-Appwrite integration is scheduled for Phase 2. The planned variables are:
+Create `.env.local` with these values:
 
 ```bash
 NEXT_PUBLIC_APPWRITE_ENDPOINT=
@@ -102,6 +107,62 @@ APPWRITE_API_KEY=
 
 Only public endpoint and ID values should use `NEXT_PUBLIC_*`. Server API keys
 must remain server-only.
+
+`APPWRITE_API_KEY` must be created from the Appwrite Console with enough scope
+for server-side invoice document operations. The current server boundary uses
+`node-appwrite` only inside `src/lib/appwrite/admin.ts`, which is marked
+server-only.
+
+## Appwrite Setup
+
+1. Create an Appwrite project and copy its endpoint and project ID.
+2. Enable Auth with the email/password provider.
+3. Create a database for this app and copy the database ID.
+4. Create an `invoices` collection, or another collection whose ID is stored in
+   `NEXT_PUBLIC_APPWRITE_INVOICES_COLLECTION_ID`.
+5. Add collection attributes:
+
+```text
+userId: string, required
+clientName: string, required
+clientEmail: email/string, required
+amount: float, required
+vatRate: float, required
+vatAmount: float, required
+total: float, required
+dueDate: datetime/string, required
+status: enum/string ["paid", "unpaid"], required
+createdAt: datetime/string, required
+updatedAt: datetime/string, required
+paidAt: datetime/string, optional
+```
+
+6. Add indexes:
+
+```text
+userId
+status
+dueDate
+userId_status
+userId_dueDate
+createdAt
+```
+
+7. Configure collection-level permissions so users cannot broadly read or write
+   all invoices. Invoice documents are created with owner-only read, update, and
+   delete permissions in `invoiceDocumentPermissions(userId)`.
+8. Create a server API key for Vercel/local server actions and store it in
+   `APPWRITE_API_KEY`. Never prefix this key with `NEXT_PUBLIC_`.
+
+The Appwrite helpers live under `src/lib/appwrite`:
+
+```text
+config.ts       # environment parsing and validation
+client.ts       # browser-safe Appwrite client helpers
+admin.ts        # server-only node-appwrite admin client
+permissions.ts  # per-user invoice document permissions
+database.ts     # typed invoice document helpers
+```
 
 ## Design Workflow
 

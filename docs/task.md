@@ -74,6 +74,10 @@ Done when:
 
 ## Phase 2: Appwrite Setup
 
+Status: Implemented. The Appwrite project itself must still be created in the
+Appwrite Console for each environment using the reproducible setup in
+`README.md`.
+
 ### TASK-004: Configure Appwrite Project
 
 Deliverables:
@@ -89,6 +93,11 @@ Done when:
 - Required environment variables are documented.
 - Appwrite setup steps are reproducible from `README.md` or a dedicated docs section.
 
+Implementation notes:
+
+- `README.md` documents required environment variables, Auth email/password,
+  invoice collection attributes, indexes, and owner-only document permissions.
+
 ### TASK-005: Build Appwrite Client Modules
 
 Deliverables:
@@ -103,6 +112,14 @@ Done when:
 - Server-only API key is never exposed to client bundles.
 - Appwrite wrappers are typed.
 - Failure modes return useful errors.
+
+Implementation notes:
+
+- Browser-safe helpers live in `src/lib/appwrite/client.ts`.
+- The server/admin helper lives in `src/lib/appwrite/admin.ts` and uses
+  `node-appwrite` behind `server-only`.
+- Typed invoice database helpers live in `src/lib/appwrite/database.ts` and
+  return `AppResult<T>` values.
 
 ## Phase 3: Authentication
 

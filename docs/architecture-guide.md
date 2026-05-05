@@ -136,6 +136,28 @@ Phase 1 route pages are placeholders only. They intentionally do not implement f
 
 Browser verification for these placeholder route shells was skipped during Phase 1 handoff per user request. Playwright smoke coverage is present in `tests/e2e/foundation.spec.ts` for later browser verification.
 
+### 3.2 Phase 2 Appwrite Setup Status
+
+Phase 2 Appwrite infrastructure is implemented:
+
+- `src/lib/appwrite/config.ts` validates public and server environment
+  variables with Zod.
+- `src/lib/appwrite/client.ts` creates browser-safe Appwrite `Client`,
+  `Account`, and `Databases` helpers from the `appwrite` web SDK.
+- `src/lib/appwrite/admin.ts` is server-only and creates the admin client from
+  `node-appwrite` with `APPWRITE_API_KEY`.
+- `src/lib/appwrite/permissions.ts` creates owner-only invoice document
+  permissions.
+- `src/lib/appwrite/database.ts` provides typed invoice document list, get,
+  create, update, and delete helpers that return typed success/error results.
+- `src/types/invoice.ts` defines the shared invoice model and Appwrite document
+  shape.
+
+The database helper still expects Phase 4 server actions to perform form
+validation and server-owned financial calculations before persistence. The
+helper enforces document ownership for get/update/delete by comparing the stored
+`userId` to the authenticated user ID passed by the caller.
+
 ## 4. Rendering Strategy
 
 - Use Server Components for route-level data reads and static shell where possible.
@@ -156,6 +178,10 @@ Use these Appwrite capabilities:
 - Database: invoice documents.
 - Permissions: per-user document access.
 - Realtime: invoice create, update, and delete events.
+
+The browser uses the `appwrite` SDK. Server-only code uses `node-appwrite`
+because the server/admin boundary needs API-key authentication through
+`setKey`.
 
 ### 5.2 Environment Variables
 
@@ -197,10 +223,15 @@ Recommended indexes:
 - `dueDate`
 - `userId_status`
 - `userId_dueDate`
+- `createdAt`
 
 ### 5.4 Permissions
 
-Each invoice document should be readable and writable only by its owner. Server actions must still verify ownership because client data cannot be trusted.
+Each invoice document should be readable and writable only by its owner. The
+implemented `invoiceDocumentPermissions(userId)` grants owner-only read, update,
+and delete permissions. Server actions must still verify ownership because
+client data cannot be trusted, and admin SDK calls can bypass Appwrite's
+document permission enforcement.
 
 ## 6. Financial Domain Rules
 
