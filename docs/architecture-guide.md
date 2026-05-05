@@ -119,6 +119,23 @@ docs/
 
 This structure can be adjusted during implementation, but the separation of app routes, features, shared libraries, stores, and tests should remain.
 
+### 3.1 Phase 1 Foundation Status
+
+The app is scaffolded with Next.js `16.2.4`, React `19.2.4`, TypeScript strict mode, TailwindCSS v4, and ShadCN/UI. The repository uses the `src/` directory and App Router route groups:
+
+- `src/app/(auth)/login` and `src/app/(auth)/signup` for anonymous authentication screens.
+- `src/app/(dashboard)/dashboard` and `src/app/(dashboard)/invoices` for the authenticated application shell.
+- `src/components/layout` for shared route shells.
+- `src/components/ui` for ShadCN-owned primitives.
+- `src/features/auth`, `src/features/dashboard`, and `src/features/invoices` for feature code.
+- `src/lib/appwrite`, `src/lib/realtime`, `src/lib/validation`, and `src/lib/utils` for system boundaries.
+- `src/stores` for focused Zustand UI state.
+- `tests/unit`, `tests/integration`, and `tests/e2e` for the planned quality layers.
+
+Phase 1 route pages are placeholders only. They intentionally do not implement final Maglo Figma fidelity, Appwrite authentication, invoice persistence, middleware protection, or realtime behavior. Those are scheduled for later phases and must follow the Figma and security workflows in this guide.
+
+Browser verification for these placeholder route shells was skipped during Phase 1 handoff per user request. Playwright smoke coverage is present in `tests/e2e/foundation.spec.ts` for later browser verification.
+
 ## 4. Rendering Strategy
 
 - Use Server Components for route-level data reads and static shell where possible.
@@ -126,6 +143,8 @@ This structure can be adjusted during implementation, but the separation of app 
 - Use Server Actions for all invoice mutations.
 - Use route revalidation after mutations to keep server-rendered summaries correct.
 - Use realtime subscriptions to keep open browser sessions updated.
+
+Phase 1 uses Server Components for route shells. Client Components should be introduced only when a later feature needs form state, dialogs, filters, charts, realtime subscriptions, or other browser-side interactivity.
 
 ## 5. Appwrite Architecture
 

@@ -1,0 +1,8 @@
+.next
+node_modules
+coverage
+docs/PRD.md
+docs/ignore.md
+playwright-report
+test-results
+package-lock.json

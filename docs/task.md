@@ -28,6 +28,8 @@ Required UI task workflow:
 
 ## Phase 1: Project Foundation
 
+Status: Implemented. Browser/e2e smoke verification is prepared but was skipped during handoff per user request.
+
 ### TASK-001: Scaffold Next.js Application
 
 Deliverables:
