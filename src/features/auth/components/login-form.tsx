@@ -19,11 +19,12 @@ export function LoginForm() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const {
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
     register,
     setError,
   } = useForm<LoginInput>({
+    mode: "onChange",
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -97,7 +98,7 @@ export function LoginForm() {
 
       <Button
         type="submit"
-        disabled={isPending}
+        disabled={isPending || !isValid}
         className="h-12 w-full rounded-[10px] bg-[#c8ee44] text-base font-semibold text-[#1b212d] hover:bg-[#bce42f]"
       >
         {isPending ? "Signing in..." : "Sign in"}

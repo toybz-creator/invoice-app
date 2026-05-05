@@ -18,11 +18,12 @@ export function SignupForm() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const {
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
     register,
     setError,
   } = useForm<SignupInput>({
+    mode: "onChange",
     resolver: zodResolver(signupSchema),
     defaultValues: {
       name: "",
@@ -88,7 +89,7 @@ export function SignupForm() {
 
       <Button
         type="submit"
-        disabled={isPending}
+        disabled={isPending || !isValid}
         className="h-12 w-full rounded-[10px] bg-[#c8ee44] text-base font-semibold text-[#1b212d] hover:bg-[#bce42f]"
       >
         {isPending ? "Creating account..." : "Create Account"}
