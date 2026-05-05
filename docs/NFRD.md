@@ -183,6 +183,13 @@ Recommended tooling:
 - Color cannot be the only signal for paid/unpaid/overdue states.
 - Responsive behavior must support mobile and desktop.
 
+## 9.1 Visual Fidelity Requirements
+
+- UI implementation must use the screen-specific Figma references documented in `docs/PRD.md` and `docs/FRD.md`.
+- Agents and developers must inspect the relevant Figma frame before implementing or materially changing sign-in, sign-up, dashboard, invoice list, or invoice detail screens.
+- Any intentional deviation from the Figma reference must be documented in `docs/architecture-guide.md` or the relevant task notes with the reason, especially when driven by accessibility, responsive behavior, missing states, or production requirements.
+- Browser verification must compare desktop and mobile implementations against the Figma reference where credentials and local server state allow it.
+
 ## 10. Observability Requirements
 
 - Important server action failures should be logged server-side.

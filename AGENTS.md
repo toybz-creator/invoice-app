@@ -15,6 +15,18 @@ Before coding, read the relevant docs and keep them aligned with the implementat
 
 If code and docs disagree, stop and reconcile the mismatch. Either update the code to match the docs or update the docs with the new decision and reason.
 
+### Figma Design Source of Truth
+
+Use the Maglo Financial Management Web UI Kit Figma frames as the canonical UI references. Before implementing or materially changing any listed screen, inspect the matching Figma frame and translate it into accessible, responsive, production-ready UI.
+
+- Sign in: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=122-1782&t=LudK3VlLncYCZtMA-4>
+- Sign up: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=134-2419&t=LudK3VlLncYCZtMA-4>
+- Dashboard: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=36-569&t=LudK3VlLncYCZtMA-4>
+- Invoices list: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=51-1249&t=LudK3VlLncYCZtMA-4>
+- Invoice detail: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=59-1718&t=LudK3VlLncYCZtMA-4>
+
+When Figma access is available, use the Figma workflow/tooling for layout, spacing, hierarchy, and assets. If access is unavailable, continue from the documented references and record the verification gap in the handoff. Do not let visual fidelity override accessibility, security, validation, loading/error/empty states, or the architecture rules.
+
 ## 2. Agent Mindset
 
 Work as a Senior Architect and Developer:

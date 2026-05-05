@@ -14,6 +14,25 @@ The product uses Appwrite for authentication, database, permissions, and realtim
 - Provide live dashboard updates when invoice data changes.
 - Deliver a responsive, accessible, documented, tested, and modular production application.
 
+## 2.1 Design Source of Truth
+
+The user interface must follow the Maglo Financial Management Web UI Kit Figma references from `docs/PRD.md`.
+
+Screen-level references:
+
+- Sign in: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=122-1782&t=LudK3VlLncYCZtMA-4>
+- Sign up: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=134-2419&t=LudK3VlLncYCZtMA-4>
+- Dashboard: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=36-569&t=LudK3VlLncYCZtMA-4>
+- Invoices list: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=51-1249&t=LudK3VlLncYCZtMA-4>
+- Invoice detail: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=59-1718&t=LudK3VlLncYCZtMA-4>
+
+Acceptance criteria:
+
+- Auth, dashboard, invoice list, and invoice detail UI work starts from the matching Figma frame.
+- Implemented screens preserve the intended visual hierarchy, spacing, navigation structure, and responsive behavior of the reference.
+- Production states that are not explicit in Figma, including loading, empty, error, validation, disabled, realtime-disconnected, and confirmation states, must be added in the same visual language.
+- Accessibility and product correctness take precedence where the design kit is incomplete or ambiguous.
+
 ## 3. User Roles
 
 ### 3.1 Business Owner

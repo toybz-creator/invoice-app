@@ -17,6 +17,20 @@ The core architectural rule is simple: Appwrite and server actions own persisted
 7. Appwrite Realtime notifies open clients about invoice changes.
 8. Dashboard metrics and invoice views update through revalidation and realtime synchronization.
 
+## 2.1 UI Design References
+
+The Maglo Financial Management Web UI Kit Figma file is the canonical visual reference for the application shell and major screens. Implementation should translate the referenced frames into accessible, responsive, production-ready Next.js UI instead of creating unrelated layouts.
+
+Screen mapping:
+
+- `/login`: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=122-1782&t=LudK3VlLncYCZtMA-4>
+- `/signup`: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=134-2419&t=LudK3VlLncYCZtMA-4>
+- `/dashboard`: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=36-569&t=LudK3VlLncYCZtMA-4>
+- `/invoices`: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=51-1249&t=LudK3VlLncYCZtMA-4>
+- `/invoices/[id]` or invoice detail view: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=59-1718&t=LudK3VlLncYCZtMA-4>
+
+Use Figma for layout, spacing, visual hierarchy, color intent, and component composition. Use ShadCN/UI, TailwindCSS, semantic HTML, and tested application state to add missing production states such as validation errors, loading, empty states, destructive confirmations, permission failures, and realtime status.
+
 ## 3. Suggested Project Structure
 
 ```text

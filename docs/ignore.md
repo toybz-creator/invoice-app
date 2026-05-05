@@ -10,3 +10,4 @@ npx plugins add vercel/vercel-plugin
 
 - UI must be responsive as being built
 - Testing, documentations
+

@@ -135,10 +135,19 @@ Allow users to:
 - Maintain a **visually balanced layout**
 - Ensure **mobile responsiveness**
 
-### 🎯 Design Reference
+### 🎯 Design References
 
-Figma Design URL:\
-<https://www.figma.com/design/TsA5OuR7NJfIqFGzZ2Drm1/Maglo---Financial-Management-Web-UI-Kit--Community---Copy-?node-id=0-1&t=KXXvJEb6uyiLMFt-1>
+Use the Maglo Financial Management Web UI Kit Figma file as the visual source of truth for the product UI. When implementing a screen, open the matching frame first and preserve the design's layout, spacing, hierarchy, and responsive intent while still satisfying accessibility, validation, loading, empty, and error-state requirements.
+
+Canonical Figma frames:
+
+- Sign in: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=122-1782&t=LudK3VlLncYCZtMA-4>
+- Sign up: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=134-2419&t=LudK3VlLncYCZtMA-4>
+- Dashboard: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=36-569&t=LudK3VlLncYCZtMA-4>
+- Invoices list: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=51-1249&t=LudK3VlLncYCZtMA-4>
+- Invoice detail: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=59-1718&t=LudK3VlLncYCZtMA-4>
+
+Fallback file entry point, if a frame link changes: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=0-1&t=LudK3VlLncYCZtMA-4>
 
 ***
 
@@ -177,4 +186,3 @@ Figma Design URL:\
      - Dashboard summaries
 
 ***
-

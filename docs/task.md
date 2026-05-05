@@ -6,6 +6,18 @@ Build the Finance Management Dashboard task by task until it is production-ready
 
 Each task should be completed with code, tests where relevant, and documentation updates before moving to the next major phase.
 
+## Figma References for UI Tasks
+
+Use these Figma frames before implementing or materially changing the corresponding screens:
+
+- Sign in: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=122-1782&t=LudK3VlLncYCZtMA-4>
+- Sign up: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=134-2419&t=LudK3VlLncYCZtMA-4>
+- Dashboard: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=36-569&t=LudK3VlLncYCZtMA-4>
+- Invoices list: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=51-1249&t=LudK3VlLncYCZtMA-4>
+- Invoice detail: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=59-1718&t=LudK3VlLncYCZtMA-4>
+
+UI task completion requires Figma-aware browser verification when a local server and any required credentials are available.
+
 ## Phase 1: Project Foundation
 
 ### TASK-001: Scaffold Next.js Application
@@ -90,8 +102,8 @@ Deliverables:
 
 - Login schema.
 - Signup schema.
-- Login form using React Hook Form and Zod.
-- Signup form using React Hook Form and Zod.
+- Login form using React Hook Form and Zod, matching the Sign in Figma frame.
+- Signup form using React Hook Form and Zod, matching the Sign up Figma frame.
 - Loading, inline error, and toast states.
 
 Done when:
@@ -195,7 +207,7 @@ Done when:
 
 Deliverables:
 
-- Responsive invoice table.
+- Responsive invoice table matching the Invoices list Figma frame.
 - All/Paid/Unpaid filter using Zustand.
 - Status badges.
 - Empty, loading, and error states.
@@ -209,7 +221,7 @@ Done when:
 
 Deliverables:
 
-- Edit invoice dialog or page.
+- Edit invoice dialog or page aligned with the Invoice detail Figma frame where the flow uses a detail view.
 - Delete confirmation dialog.
 - Mark paid/unpaid control.
 - Accessible action buttons and menus.
@@ -225,6 +237,7 @@ Done when:
 
 Deliverables:
 
+- Dashboard layout and metric cards matching the Dashboard Figma frame.
 - Total invoices metric.
 - Total paid amount metric.
 - Pending payments metric.
