@@ -168,7 +168,7 @@ Phase 3 authentication is implemented:
 - `src/features/auth/components` contains the React Hook Form auth forms and
   Figma-derived auth presentation components.
 - `src/app/actions/auth.actions.ts` owns signup, login, and logout server
-  actions.
+  actions, plus password recovery request and completion actions.
 - `src/lib/appwrite/admin.ts` exposes admin and session-scoped Appwrite account
   helpers.
 - `src/lib/appwrite/session.ts` stores, clears, and verifies Appwrite session
@@ -176,7 +176,7 @@ Phase 3 authentication is implemented:
 - `src/lib/appwrite/session-cookie.ts` keeps cookie naming/options reusable by
   both server-only code and edge middleware.
 - `src/proxy.ts` protects `/dashboard` and `/invoices`, and redirects
-  authenticated users away from `/login` and `/signup`.
+  authenticated users away from `/login`, `/signup`, and `/forgot-password`.
 
 The auth server actions use the server/admin Appwrite boundary to create users
 and email/password sessions. The returned Appwrite session secret is stored in
@@ -227,6 +227,12 @@ For authentication, server actions use `node-appwrite` to create Appwrite users,
 create email/password sessions, and delete the current session on logout. Client
 components never receive the Appwrite session secret; they receive only typed
 success/error results from server actions.
+
+Password recovery uses `Account.createRecovery()` with an application-owned
+`/reset-password` callback URL and `Account.updateRecovery()` with the `userId`
+and `secret` query parameters returned by Appwrite. Recovery request responses
+must remain neutral to avoid account enumeration. Appwrite Web platform
+hostnames must include local and deployed app origins used for recovery links.
 
 ### 5.2 Environment Variables
 

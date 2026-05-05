@@ -18,6 +18,10 @@ export const loginSchema = z.object({
   remember: z.boolean().optional(),
 });
 
+export const forgotPasswordSchema = z.object({
+  email: emailSchema,
+});
+
 export const signupSchema = z.object({
   name: z
     .string()
@@ -28,5 +32,19 @@ export const signupSchema = z.object({
   password: passwordSchema,
 });
 
+export const resetPasswordSchema = z
+  .object({
+    userId: z.string().min(1, "Password reset link is missing a user ID."),
+    secret: z.string().min(1, "Password reset link is missing a secret."),
+    password: passwordSchema,
+    confirmPassword: passwordSchema,
+  })
+  .refine((input) => input.password === input.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  });
+
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 export type SignupInput = z.infer<typeof signupSchema>;

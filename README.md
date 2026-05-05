@@ -16,7 +16,8 @@ Phase 1 through Phase 3 are implemented:
   realtime, validation, utilities, stores, and shared types.
 - ESLint, Prettier, Vitest, and Playwright scripts.
 - Appwrite browser and server/admin client boundaries.
-- Appwrite email/password signup, login, logout, and session helpers.
+- Appwrite email/password signup, login, logout, password recovery, and session
+  helpers.
 - HttpOnly Appwrite session cookie handling for server actions and middleware.
 - Next.js Proxy route protection, the current Next.js convention for
   middleware-style dashboard and invoice route gating.
@@ -179,6 +180,13 @@ this cookie to gate `/dashboard` and `/invoices`, and server-only helpers verify
 the session with Appwrite before trusted data access. Logout deletes the current
 Appwrite session when possible and clears the local cookie before redirecting to
 `/login`.
+
+Password recovery uses Appwrite `Account.createRecovery()` from
+`/forgot-password` and completes with `Account.updateRecovery()` from the
+`/reset-password?userId=...&secret=...` callback. The recovery request response
+is intentionally neutral so the UI does not reveal whether an email address is
+registered. Add the local and production app origins as Appwrite Web platforms
+so recovery callback URLs are accepted.
 
 ## Design Workflow
 

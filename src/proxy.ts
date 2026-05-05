@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { getSessionCookieName } from "@/lib/appwrite/session-cookie";
 
 const protectedRoutes = ["/dashboard", "/invoices"];
-const authRoutes = ["/login", "/signup"];
+const authRoutes = ["/forgot-password", "/login", "/signup"];
 
 function isRouteMatch(pathname: string, routes: string[]) {
   return routes.some(

@@ -1,9 +1,15 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { ID } from "node-appwrite";
 
-import { loginSchema, signupSchema } from "@/features/auth/schemas/auth.schema";
+import {
+  forgotPasswordSchema,
+  loginSchema,
+  resetPasswordSchema,
+  signupSchema,
+} from "@/features/auth/schemas/auth.schema";
 import {
   createAdminAccount,
   createAdminUsers,
@@ -57,6 +63,20 @@ function authErrorMessage(error: unknown) {
   }
 
   return "Authentication failed. Please try again.";
+}
+
+async function getRequestOrigin() {
+  const headerStore = await headers();
+  const origin = headerStore.get("origin");
+
+  if (origin) {
+    return origin;
+  }
+
+  const host = headerStore.get("x-forwarded-host") ?? headerStore.get("host");
+  const protocol = headerStore.get("x-forwarded-proto") ?? "http";
+
+  return host ? `${protocol}://${host}` : "http://localhost:3000";
 }
 
 async function createSession(email: string, password: string, remember = true) {
@@ -114,6 +134,71 @@ export async function signupAction(input: unknown): Promise<AuthActionResult> {
     return { ok: true, message: "Account created successfully." };
   } catch (error) {
     return { ok: false, error: authErrorMessage(error) };
+  }
+}
+
+export async function forgotPasswordAction(
+  input: unknown,
+): Promise<AuthActionResult> {
+  const parsed = forgotPasswordSchema.safeParse(input);
+
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: "Check the highlighted fields.",
+      fieldErrors: fieldErrorsFromIssues(parsed.error.issues),
+    };
+  }
+
+  try {
+    const origin = await getRequestOrigin();
+    const resetUrl = new URL("/reset-password", origin);
+
+    await createAdminAccount().createRecovery({
+      email: parsed.data.email,
+      url: resetUrl.toString(),
+    });
+  } catch {
+    // Keep this response neutral so registered emails cannot be enumerated.
+  }
+
+  return {
+    ok: true,
+    message:
+      "If an account exists for that email, a password reset link has been sent.",
+  };
+}
+
+export async function resetPasswordAction(
+  input: unknown,
+): Promise<AuthActionResult> {
+  const parsed = resetPasswordSchema.safeParse(input);
+
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: "Check the highlighted fields.",
+      fieldErrors: fieldErrorsFromIssues(parsed.error.issues),
+    };
+  }
+
+  try {
+    await createAdminAccount().updateRecovery({
+      userId: parsed.data.userId,
+      secret: parsed.data.secret,
+      password: parsed.data.password,
+    });
+
+    return {
+      ok: true,
+      message: "Password updated. You can now sign in.",
+    };
+  } catch {
+    return {
+      ok: false,
+      error:
+        "This password reset link is invalid or has expired. Request a new link and try again.",
+    };
   }
 }
 

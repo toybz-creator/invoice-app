@@ -89,7 +89,7 @@ export function LoginForm() {
           Remember for 30 Days
         </label>
         <Link
-          href="/login"
+          href="/forgot-password"
           className="font-medium text-[#1b212d] outline-none hover:underline focus-visible:ring-3 focus-visible:ring-[#c8ee44]/50"
         >
           Forgot password
