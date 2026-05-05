@@ -1,0 +1,6 @@
+- Use `docs/FRD.md` as the functional requirements source.
+- Use `docs/NFRD.md` as the non-functional requirements source.
+- Use `docs/architecture-guide.md` as the architecture and implementation guide.
+- Use `docs/task.md` as the step-by-step implementation plan.
+- During implementation, keep README setup/dependency docs, in-code documentation, unit tests, and e2e tests updated alongside code changes.
+-
