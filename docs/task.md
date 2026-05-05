@@ -8,7 +8,7 @@ Each task should be completed with code, tests where relevant, and documentation
 
 ## Figma References for UI Tasks
 
-Use these Figma frames before implementing or materially changing the corresponding screens:
+Use these Figma frames through the Codex `@Figma` plugin before implementing or materially changing the corresponding screens:
 
 - Sign in: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=122-1782&t=LudK3VlLncYCZtMA-4>
 - Sign up: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=134-2419&t=LudK3VlLncYCZtMA-4>
@@ -16,7 +16,15 @@ Use these Figma frames before implementing or materially changing the correspond
 - Invoices list: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=51-1249&t=LudK3VlLncYCZtMA-4>
 - Invoice detail: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=59-1718&t=LudK3VlLncYCZtMA-4>
 
-UI task completion requires Figma-aware browser verification when a local server and any required credentials are available.
+Required UI task workflow:
+
+1. Use Codex `@Figma` to fetch structured design context for the exact frame, using `get_design_context` when available.
+2. Capture the matching Figma screenshot, using `get_screenshot` when available.
+3. Identify and use required Figma assets rather than placeholders.
+4. Translate the frame into this app's Next.js, ShadCN/UI, TailwindCSS, TypeScript, and accessibility patterns.
+5. Add missing production states, including loading, empty, error, validation, disabled, realtime-disconnected, and confirmation states.
+6. Run browser verification against the Figma screenshot on desktop and mobile when a local server and any required credentials are available.
+7. Record any `@Figma` access or visual verification gap in the final handoff.
 
 ## Phase 1: Project Foundation
 

@@ -186,9 +186,12 @@ Recommended tooling:
 ## 9.1 Visual Fidelity Requirements
 
 - UI implementation must use the screen-specific Figma references documented in `docs/PRD.md` and `docs/FRD.md`.
-- Agents and developers must inspect the relevant Figma frame before implementing or materially changing sign-in, sign-up, dashboard, invoice list, or invoice detail screens.
+- Agents and developers must use the Codex `@Figma` plugin to inspect the relevant Figma frame before implementing or materially changing sign-in, sign-up, dashboard, invoice list, or invoice detail screens.
+- The required Figma inspection includes structured design context, a screenshot, and any referenced assets needed to reproduce the screen faithfully.
+- Figma output is a design contract, not copy-paste application code. Implementations must adapt it to the app's Next.js App Router, ShadCN/UI, TailwindCSS, TypeScript, validation, data, and accessibility patterns.
 - Any intentional deviation from the Figma reference must be documented in `docs/architecture-guide.md` or the relevant task notes with the reason, especially when driven by accessibility, responsive behavior, missing states, or production requirements.
 - Browser verification must compare desktop and mobile implementations against the Figma reference where credentials and local server state allow it.
+- If Figma access is unavailable, the agent must continue from documented references, avoid inventing unrelated layouts, and explicitly record the verification gap.
 
 ## 10. Observability Requirements
 

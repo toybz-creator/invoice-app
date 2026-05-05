@@ -17,7 +17,7 @@ If code and docs disagree, stop and reconcile the mismatch. Either update the co
 
 ### Figma Design Source of Truth
 
-Use the Maglo Financial Management Web UI Kit Figma frames as the canonical UI references. Before implementing or materially changing any listed screen, inspect the matching Figma frame and translate it into accessible, responsive, production-ready UI.
+Use the Maglo Financial Management Web UI Kit Figma frames as the canonical UI references. Before implementing or materially changing any listed screen, use the Codex `@Figma` plugin to inspect the matching Figma frame and translate it into accessible, responsive, production-ready UI.
 
 - Sign in: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=122-1782&t=LudK3VlLncYCZtMA-4>
 - Sign up: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=134-2419&t=LudK3VlLncYCZtMA-4>
@@ -25,7 +25,7 @@ Use the Maglo Financial Management Web UI Kit Figma frames as the canonical UI r
 - Invoices list: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=51-1249&t=LudK3VlLncYCZtMA-4>
 - Invoice detail: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=59-1718&t=LudK3VlLncYCZtMA-4>
 
-When Figma access is available, use the Figma workflow/tooling for layout, spacing, hierarchy, and assets. If access is unavailable, continue from the documented references and record the verification gap in the handoff. Do not let visual fidelity override accessibility, security, validation, loading/error/empty states, or the architecture rules.
+When Figma access is available, the required workflow is: fetch structured design context for the exact node, capture a screenshot, identify required assets, implement using this app's Next.js/ShadCN/UI/Tailwind conventions, and compare the built UI against the Figma screenshot in browser verification. With Figma MCP actions, use `get_design_context` before implementation and `get_screenshot` for visual comparison. If access is unavailable, continue from the documented references and record the verification gap in the handoff. Do not let visual fidelity override accessibility, security, validation, loading/error/empty states, or the architecture rules.
 
 ## 2. Agent Mindset
 

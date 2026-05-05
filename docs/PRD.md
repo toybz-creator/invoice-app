@@ -137,7 +137,17 @@ Allow users to:
 
 ### 🎯 Design References
 
-Use the Maglo Financial Management Web UI Kit Figma file as the visual source of truth for the product UI. When implementing a screen, open the matching frame first and preserve the design's layout, spacing, hierarchy, and responsive intent while still satisfying accessibility, validation, loading, empty, and error-state requirements.
+Use the Maglo Financial Management Web UI Kit Figma file as the visual source of truth for the product UI. When implementing a screen, use the Codex `@Figma` plugin against the exact matching frame before coding, then preserve the design's layout, spacing, hierarchy, component composition, assets, and responsive intent while still satisfying accessibility, validation, loading, empty, and error-state requirements.
+
+Required Codex `@Figma` workflow for every screen listed below:
+
+1. Fetch structured design context for the exact frame or node.
+2. Capture a Figma screenshot for visual comparison.
+3. Download or reference required Figma-provided assets instead of using placeholders.
+4. Translate the design into this app's Next.js, ShadCN/UI, TailwindCSS, and accessibility conventions.
+5. Compare the built UI against the Figma screenshot in desktop and mobile browser states.
+
+In Codex terms, this means using the `@Figma` workflow to run design-context retrieval and screenshot capture, then implementation. Record any Figma access, asset, or visual-parity gap in the final handoff and, when architectural, in `docs/architecture-guide.md`.
 
 Canonical Figma frames:
 

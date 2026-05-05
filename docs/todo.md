@@ -2,5 +2,5 @@
 - Use `docs/NFRD.md` as the non-functional requirements source.
 - Use `docs/architecture-guide.md` as the architecture and implementation guide.
 - Use `docs/task.md` as the step-by-step implementation plan.
+- Use Codex `@Figma` for UI tasks before coding: fetch exact-frame design context, capture a screenshot, identify assets, implement with local conventions, and verify against Figma in the browser.
 - During implementation, keep README setup/dependency docs, in-code documentation, unit tests, and e2e tests updated alongside code changes.
--

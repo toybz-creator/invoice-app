@@ -16,7 +16,7 @@ The product uses Appwrite for authentication, database, permissions, and realtim
 
 ## 2.1 Design Source of Truth
 
-The user interface must follow the Maglo Financial Management Web UI Kit Figma references from `docs/PRD.md`.
+The user interface must follow the Maglo Financial Management Web UI Kit Figma references from `docs/PRD.md`. UI implementation must use the Codex `@Figma` plugin whenever Figma access is available, so design work starts from actual frame metadata, screenshots, and assets instead of visual guesswork.
 
 Screen-level references:
 
@@ -28,10 +28,13 @@ Screen-level references:
 
 Acceptance criteria:
 
-- Auth, dashboard, invoice list, and invoice detail UI work starts from the matching Figma frame.
+- Auth, dashboard, invoice list, and invoice detail UI work starts from the matching Figma frame through Codex `@Figma`.
+- Before coding a listed screen, the agent fetches structured design context, captures a screenshot, and identifies required assets from the exact Figma node.
 - Implemented screens preserve the intended visual hierarchy, spacing, navigation structure, and responsive behavior of the reference.
+- Figma-provided imagery, icons, and SVGs are used when they are part of the design, unless a documented accessibility, licensing, performance, or technical constraint requires an alternative.
 - Production states that are not explicit in Figma, including loading, empty, error, validation, disabled, realtime-disconnected, and confirmation states, must be added in the same visual language.
 - Accessibility and product correctness take precedence where the design kit is incomplete or ambiguous.
+- Any skipped `@Figma` step, inaccessible frame, missing asset, or intentional visual deviation is documented in the handoff and, when it affects architecture or reusable UI decisions, in `docs/architecture-guide.md`.
 
 ## 3. User Roles
 

@@ -31,6 +31,22 @@ Screen mapping:
 
 Use Figma for layout, spacing, visual hierarchy, color intent, and component composition. Use ShadCN/UI, TailwindCSS, semantic HTML, and tested application state to add missing production states such as validation errors, loading, empty states, destructive confirmations, permission failures, and realtime status.
 
+### 2.2 Codex `@Figma` Implementation Workflow
+
+For every UI task touching a mapped screen, use the Codex `@Figma` plugin before implementation:
+
+1. Fetch structured design context for the exact Figma node.
+2. Capture a screenshot for the same node and viewport variant.
+3. Download or reference Figma-provided assets, icons, and SVGs needed for the screen.
+4. Map Figma structure to this app's route, feature, and component boundaries.
+5. Implement with ShadCN/UI primitives, TailwindCSS tokens, semantic HTML, and accessible interaction states.
+6. Add production states missing from the design in the same visual language.
+7. Verify the local UI against the Figma screenshot with browser testing on desktop and mobile.
+
+The `@Figma` output should not be pasted directly as final code. Treat it as design context to translate into the established architecture, typed data flow, form handling, realtime strategy, and component conventions. When Figma access, assets, or screenshots are unavailable, document the gap and proceed from the canonical frame links and existing design decisions.
+
+When the plugin exposes Figma MCP actions, the expected calls are `get_design_context` for structure and measurements, `get_screenshot` for visual comparison, and asset download/reference only for the assets used by the target frame.
+
 ## 3. Suggested Project Structure
 
 ```text
