@@ -98,10 +98,10 @@ src/
       database.ts
       permissions.ts
     realtime/
-      appwrite-realtime.ts
-      sse.ts
-      socket.ts
+      appwrite-adapter.ts
+      index.ts
       types.ts
+      README.md
     utils/
       currency.ts
       dates.ts
@@ -285,8 +285,14 @@ Phase 6 dashboard implementation:
   through `buildStatusSummary()` and `buildMonthlySummary()`.
 - Invoice server action results update the shared invoice store immediately, so
   metric and chart updates follow create, edit, delete, and paid/unpaid
-  mutations without a route refresh. Phase 7 realtime applies the same store
-  updates for changes received from other browser tabs or clients.
+  mutations without a route refresh. Phase 7 realtime uses the same store
+  update path for changes received from other browser tabs or clients.
+- Phase 7 mounts `InvoiceRealtimeSync` inside
+  `src/features/invoices/components/invoice-data-provider.tsx`, subscribes
+  through `useInvoiceRealtime({ userId })`, filters Appwrite row events by
+  owner, updates `src/stores/invoice-data.store.ts`, exposes connection status
+  to the invoice and dashboard workspaces, retries subscription setup with
+  backoff, and cleans up on unmount/logout.
 
 The dashboard UI was implemented from `docs/ui-design/Dashboard.png`. Browser
 visual verification still needs a configured authenticated Appwrite session so
@@ -445,33 +451,36 @@ Avoid:
 
 ## 9. Realtime Architecture
 
-Create a typed realtime layer:
+The app uses a typed realtime layer:
 
 ```text
 lib/realtime/
-  appwrite-realtime.ts
-  sse.ts
-  socket.ts
+  appwrite-adapter.ts
   types.ts
+  README.md
 ```
 
-The UI should subscribe through feature hooks such as:
+The UI subscribes through feature hooks such as:
 
 ```text
 useInvoiceRealtime({ userId })
 ```
 
-The hook should:
+The invoice realtime hook:
 
-- Subscribe to Appwrite invoice changes.
-- Filter or verify events by user.
-- Update the local synchronized invoice view.
-- Expose connection status.
-- Reconnect with backoff after subscription setup or callback failures and when
+- Subscribes to Appwrite invoice changes.
+- Filters or verifies events by user.
+- Updates the local synchronized invoice view.
+- Exposes connection status.
+- Reconnects with backoff after subscription setup or callback failures and when
   the browser comes back online or visible.
-- Clean up subscriptions.
+- Cleans up subscriptions.
 
-SSE and Socket adapters should be introduced behind the same realtime boundary when needed. For the initial release, Appwrite Realtime may handle invoice updates directly while SSE/socket files document extension points or power non-invoice events.
+SSE and Socket adapters should be introduced behind the same realtime boundary
+when needed. For the current release, Appwrite Realtime handles invoice
+create/update/delete events directly, and `src/lib/realtime/README.md`
+documents the SSE/socket extension path for non-invoice events or future event
+shapes that Appwrite Realtime does not cover cleanly.
 
 ## 10. Server Action Pattern
 

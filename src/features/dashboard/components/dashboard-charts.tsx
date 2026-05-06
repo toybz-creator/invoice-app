@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import {
   Area,
   AreaChart,
@@ -39,6 +40,20 @@ function EmptyChartState({ label }: { label: string }) {
   );
 }
 
+function ChartFrame({
+  children,
+  height,
+}: {
+  children: ReactNode;
+  height: number;
+}) {
+  return (
+    <div className="mt-6 min-w-0 w-full" style={{ height, minWidth: 0 }}>
+      {children}
+    </div>
+  );
+}
+
 function formatMonthLabel(month: string) {
   const [year, monthIndex] = month.split("-").map(Number);
 
@@ -68,9 +83,9 @@ export function DashboardCharts({
   const hasMonthlyData = monthlySummary.length > 0;
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_330px]">
+    <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1fr)_330px]">
       <section
-        className="rounded-lg border border-[#f2f4f7] bg-white p-5"
+        className="min-w-0 rounded-lg border border-[#f2f4f7] bg-white p-5"
         aria-labelledby="monthly-trend-title"
       >
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -97,9 +112,14 @@ export function DashboardCharts({
           </div>
         </div>
 
-        <div className="mt-6 h-[300px]">
+        <ChartFrame height={300}>
           {hasMonthlyData ? (
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer
+              width="100%"
+              height={300}
+              minWidth={0}
+              minHeight={260}
+            >
               <AreaChart
                 data={monthlySummary.map((point) => ({
                   ...point,
@@ -157,11 +177,11 @@ export function DashboardCharts({
           ) : (
             <EmptyChartState label="Paid invoices will appear in the monthly trend once revenue is recorded." />
           )}
-        </div>
+        </ChartFrame>
       </section>
 
       <section
-        className="rounded-lg border border-[#f2f4f7] bg-white p-5"
+        className="min-w-0 rounded-lg border border-[#f2f4f7] bg-white p-5"
         aria-labelledby="status-chart-title"
       >
         <h2 id="status-chart-title" className="text-lg font-semibold">
@@ -171,9 +191,14 @@ export function DashboardCharts({
           Invoice count and exposure by status
         </p>
 
-        <div className="mt-6 h-[180px]">
+        <ChartFrame height={180}>
           {hasStatusData ? (
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer
+              width="100%"
+              height={180}
+              minWidth={0}
+              minHeight={160}
+            >
               <PieChart>
                 <Pie
                   data={statusSummary}
@@ -209,7 +234,7 @@ export function DashboardCharts({
           ) : (
             <EmptyChartState label="Create an invoice to see paid and unpaid status split." />
           )}
-        </div>
+        </ChartFrame>
 
         <div className="mt-4 space-y-3">
           {statusSummary.map((point) => (
@@ -241,7 +266,7 @@ export function DashboardCharts({
       </section>
 
       <section
-        className="rounded-lg border border-[#f2f4f7] bg-white p-5 xl:col-span-2"
+        className="min-w-0 rounded-lg border border-[#f2f4f7] bg-white p-5 xl:col-span-2"
         aria-labelledby="status-bars-title"
       >
         <h2 id="status-bars-title" className="text-lg font-semibold">
@@ -250,9 +275,14 @@ export function DashboardCharts({
         <p className="text-sm text-[#929eae]">
           Value comparison for paid revenue and pending payments
         </p>
-        <div className="mt-6 h-[220px]">
+        <ChartFrame height={220}>
           {hasStatusData ? (
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer
+              width="100%"
+              height={220}
+              minWidth={0}
+              minHeight={180}
+            >
               <BarChart data={statusSummary} margin={{ left: 0, right: 8 }}>
                 <CartesianGrid
                   stroke="#f3f5f8"
@@ -294,7 +324,7 @@ export function DashboardCharts({
           ) : (
             <EmptyChartState label="Status exposure appears after the first invoice is saved." />
           )}
-        </div>
+        </ChartFrame>
       </section>
     </div>
   );

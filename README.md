@@ -5,7 +5,7 @@ TailwindCSS, and Vercel.
 
 ## Current Status
 
-Phase 1 through Phase 6 are implemented:
+Phase 1 through Phase 7 are implemented:
 
 - Next.js App Router with TypeScript strict mode and `src/`.
 - TailwindCSS v4 and ShadCN/UI initialized.
@@ -46,9 +46,15 @@ Phase 1 through Phase 6 are implemented:
 - Responsive Recharts dashboard visualizations for monthly revenue/VAT trend,
   paid versus unpaid split, and status exposure, with typed empty states.
 - Dashboard overdue and due-soon insight panels with due-date countdown labels.
+- Typed realtime contracts under `src/lib/realtime`, an Appwrite Realtime
+  adapter, and a documented SSE/socket extension path.
+- Invoice realtime synchronization through `useInvoiceRealtime({ userId })`,
+  with owner-filtered create/update/delete events, shared invoice store updates,
+  connection status, cleanup on unmount, and retry behavior.
 
-Realtime subscriptions, production e2e flows, authenticated browser visual
-verification, and Vercel deployment are still pending later phases.
+Production e2e flows, authenticated browser visual verification, cross-tab
+realtime browser verification, and Vercel deployment are still pending later
+phases.
 
 ## Prerequisites
 

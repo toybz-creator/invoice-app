@@ -25,7 +25,7 @@ export default async function DashboardLayout({
     : "We could not load your invoices right now. Refresh the page or try again shortly.";
 
   return (
-    <DashboardShell>
+    <DashboardShell user={{ name: user.name, email: user.email }}>
       <InvoiceDataProvider
         userId={user.$id}
         initialInvoices={initialInvoices}

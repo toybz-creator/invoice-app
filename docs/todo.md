@@ -7,3 +7,7 @@
 - Compartmentalise the app more by seeing where code are use twice and turning them into components, some known cases are:
   Loading component, Invoice Table, invoice modals, page headers? etc
 - Graph and UI fixes across app
+- Responsiveness
+- Check VAT calculations etc
+- Use terraform to create Appwrite services blueprint
+- Installation guide and co in ReadMe

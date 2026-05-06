@@ -317,19 +317,34 @@ Done when:
 
 ## Phase 7: Realtime
 
+Status: Implemented. Appwrite Realtime is wired through the typed
+`src/lib/realtime` boundary and `useInvoiceRealtime({ userId })`. Invoice
+create, update, and delete events are owner-filtered into the volatile
+`invoice-data.store` snapshot, connection status is exposed to the invoice and
+dashboard workspaces, and subscription cleanup/retry behavior is implemented.
+Cross-tab browser verification still requires an authenticated local Appwrite
+session.
+
 ### TASK-018: Build Realtime Abstraction
 
 Deliverables:
 
 - `lib/realtime/types.ts`.
 - Appwrite realtime adapter.
-- SSE adapter placeholder or implementation.
-- Socket adapter placeholder or implementation.
+- SSE/socket extension path documented in `src/lib/realtime/README.md`.
 
 Done when:
 
 - UI imports typed realtime hooks/services, not raw vendor calls.
 - Extension path for SSE/socket is documented.
+
+Implementation notes:
+
+- Shared realtime contracts live in `src/lib/realtime/types.ts`.
+- The Appwrite adapter lives in `src/lib/realtime/appwrite-adapter.ts`.
+- `src/lib/realtime/README.md` documents that SSE and sockets should be added
+  behind the same typed adapter contract only when Appwrite Realtime no longer
+  covers the event shape.
 
 ### TASK-019: Connect Invoice Realtime Updates
 
@@ -344,6 +359,19 @@ Done when:
 
 - Creating/updating/deleting an invoice in one tab updates another open tab.
 - Realtime failure does not block manual CRUD.
+
+Implementation notes:
+
+- `src/features/invoices/hooks/use-invoice-realtime.ts` subscribes to the
+  Appwrite invoice row channel for the configured database/table, filters
+  events by authenticated `userId`, applies changes to the shared invoice
+  store, exposes connected/reconnecting/disconnected/error status, retries with
+  backoff, and cleans up on unmount.
+- `src/features/invoices/components/invoice-data-provider.tsx` mounts
+  `InvoiceRealtimeSync` once inside the authenticated dashboard shell so
+  `/dashboard` and `/invoices` receive the same synchronized invoice snapshot.
+- `tests/unit/invoice-data-store.test.ts` covers owner-filtered realtime
+  upsert/delete behavior.
 
 ## Phase 8: Testing
 
