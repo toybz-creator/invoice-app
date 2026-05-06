@@ -19,12 +19,16 @@ Phase 1 through Phase 5 are implemented:
 - Appwrite email/password signup, login, logout, password recovery, and session
   helpers.
 - HttpOnly Appwrite session cookie handling for server actions and middleware.
+- Persistent login cookies that use the Appwrite session expiry by default, so
+  users stay signed in until the Appwrite session expires or they log out.
 - Next.js Proxy route protection, the current Next.js convention for
   middleware-style dashboard and invoice route gating.
 - React Hook Form and Zod auth forms translated from local Maglo reference
   imagery, with inline errors, pending states, and toast feedback.
 - Runtime validation for required Appwrite environment variables.
 - Typed invoice document helpers with owner-scoped permissions.
+- Environment-aware development error logging and retry handling around
+  Appwrite session verification, reads, and mutations.
 - Reproducible Appwrite database, collection, attribute, index, and permission
   setup notes.
 - Invoice validation schemas, finance utilities, dashboard aggregation, due-date
@@ -120,10 +124,16 @@ NEXT_PUBLIC_APPWRITE_PROJECT_ID=
 NEXT_PUBLIC_APPWRITE_DATABASE_ID=
 NEXT_PUBLIC_APPWRITE_INVOICES_COLLECTION_ID=
 APPWRITE_API_KEY=
+APP_ENV=development
 ```
 
 Only public endpoint and ID values should use `NEXT_PUBLIC_*`. Server API keys
 must remain server-only.
+
+`APP_ENV` controls server-side diagnostic logging. Use `development` locally to
+log Appwrite/auth/action failures with useful context. Use `production` in
+production so sensitive operational details are not printed to logs by default.
+Accepted values are `development`, `preview`, `production`, and `test`.
 
 `APPWRITE_API_KEY` must be created from the Appwrite Console with enough scope
 for server-side invoice document operations. The current server boundary uses
@@ -189,7 +199,15 @@ named `a_session_<NEXT_PUBLIC_APPWRITE_PROJECT_ID>`. `src/proxy.ts` checks for
 this cookie to gate `/dashboard` and `/invoices`, and server-only helpers verify
 the session with Appwrite before trusted data access. Logout deletes the current
 Appwrite session when possible and clears the local cookie before redirecting to
-`/login`.
+`/login`. Login always persists the local cookie until the Appwrite session
+expiry so routine browser refreshes and direct URL visits do not force users to
+sign in again.
+
+Appwrite session verification, invoice reads, and invoice mutations are wrapped
+with a small retry layer for transient network, timeout, rate-limit, and 5xx
+failures. In `APP_ENV=development`, those failures are logged with operation
+labels and non-secret context to make direct-load and mutation issues easier to
+debug.
 
 Password recovery uses Appwrite `Account.createRecovery()` from
 `/forgot-password` and completes with `Account.updateRecovery()` from the

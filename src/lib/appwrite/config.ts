@@ -11,10 +11,16 @@ const serverConfigSchema = publicConfigSchema.extend({
   apiKey: z.string().min(1),
 });
 
+const appEnvironmentSchema = z
+  .enum(["development", "preview", "production", "test"])
+  .default("development");
+
 export type PublicAppwriteConfig = z.infer<typeof publicConfigSchema>;
 export type ServerAppwriteConfig = z.infer<typeof serverConfigSchema>;
+export type AppEnvironment = z.infer<typeof appEnvironmentSchema>;
 
 export type AppwriteEnv = Record<string, string | undefined> & {
+  APP_ENV?: string;
   NEXT_PUBLIC_APPWRITE_ENDPOINT?: string;
   NEXT_PUBLIC_APPWRITE_PROJECT_ID?: string;
   NEXT_PUBLIC_APPWRITE_DATABASE_ID?: string;
@@ -48,6 +54,14 @@ export function getPublicAppwriteConfig() {
 
 export function getServerAppwriteConfig() {
   return parseServerAppwriteConfig(process.env);
+}
+
+export function parseAppEnvironment(env: AppwriteEnv): AppEnvironment {
+  return appEnvironmentSchema.parse(env.APP_ENV ?? process.env.NODE_ENV);
+}
+
+export function getAppEnvironment() {
+  return parseAppEnvironment(process.env);
 }
 
 export function formatAppwriteConfigError(error: unknown) {

@@ -29,7 +29,7 @@ export function LoginForm() {
     defaultValues: {
       email: "",
       password: "",
-      remember: false,
+      remember: true,
     },
   });
 
@@ -78,16 +78,7 @@ export function LoginForm() {
         />
       </div>
 
-      <div className="flex items-center justify-between gap-4 text-sm">
-        <label className="flex items-center gap-2 font-medium text-[#1b212d]">
-          <input
-            type="checkbox"
-            className="size-4 rounded-[3px] border-[#929eae] accent-[#c8ee44]"
-            disabled={isPending}
-            {...register("remember")}
-          />
-          Remember for 30 Days
-        </label>
+      <div className="flex items-center justify-end gap-4 text-sm">
         <Link
           href="/forgot-password"
           className="font-medium text-[#1b212d] outline-none hover:underline focus-visible:ring-3 focus-visible:ring-[#c8ee44]/50"

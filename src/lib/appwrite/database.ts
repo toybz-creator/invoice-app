@@ -4,6 +4,7 @@ import { createAdminDatabases } from "@/lib/appwrite/admin";
 import { getServerAppwriteConfig } from "@/lib/appwrite/config";
 import { toAppwriteError } from "@/lib/appwrite/errors";
 import { invoiceDocumentPermissions } from "@/lib/appwrite/permissions";
+import { withAppwriteRetry } from "@/lib/appwrite/retry";
 import type {
   AppwriteInvoiceDocument,
   Invoice,
@@ -72,11 +73,18 @@ export async function listInvoiceDocumentsByUser(
       queries.push(Query.cursorAfter(options.cursorAfter));
     }
 
-    const response = await databases.listDocuments<AppwriteInvoiceDocument>({
-      ...collectionConfig,
-      queries,
-      total: true,
-    });
+    const response = await withAppwriteRetry(
+      () =>
+        databases.listDocuments<AppwriteInvoiceDocument>({
+          ...collectionConfig,
+          queries,
+          total: true,
+        }),
+      {
+        context: { userId, status: options.status },
+        label: "List invoice documents",
+      },
+    );
 
     return {
       ok: true,
@@ -102,10 +110,14 @@ export async function getInvoiceDocumentForUser(
 ): Promise<AppResult<Invoice>> {
   try {
     const databases = createAdminDatabases();
-    const document = await databases.getDocument<AppwriteInvoiceDocument>({
-      ...getInvoiceCollectionConfig(),
-      documentId: invoiceId,
-    });
+    const document = await withAppwriteRetry(
+      () =>
+        databases.getDocument<AppwriteInvoiceDocument>({
+          ...getInvoiceCollectionConfig(),
+          documentId: invoiceId,
+        }),
+      { context: { invoiceId, userId }, label: "Get invoice document" },
+    );
 
     if (document.userId !== userId) {
       return { ok: false, error: "Invoice not found.", status: 404 };
@@ -122,12 +134,19 @@ export async function createInvoiceDocument(
 ): Promise<AppResult<Invoice>> {
   try {
     const databases = createAdminDatabases();
-    const document = await databases.createDocument<AppwriteInvoiceDocument>({
-      ...getInvoiceCollectionConfig(),
-      documentId: ID.unique(),
-      data: input,
-      permissions: invoiceDocumentPermissions(input.userId),
-    });
+    const document = await withAppwriteRetry(
+      () =>
+        databases.createDocument<AppwriteInvoiceDocument>({
+          ...getInvoiceCollectionConfig(),
+          documentId: ID.unique(),
+          data: input,
+          permissions: invoiceDocumentPermissions(input.userId),
+        }),
+      {
+        context: { userId: input.userId, status: input.status },
+        label: "Create invoice document",
+      },
+    );
 
     return { ok: true, data: mapInvoiceDocument(document) };
   } catch (error) {
@@ -148,12 +167,16 @@ export async function updateInvoiceDocumentForUser(
 
   try {
     const databases = createAdminDatabases();
-    const document = await databases.updateDocument<AppwriteInvoiceDocument>({
-      ...getInvoiceCollectionConfig(),
-      documentId: invoiceId,
-      data: input,
-      permissions: invoiceDocumentPermissions(userId),
-    });
+    const document = await withAppwriteRetry(
+      () =>
+        databases.updateDocument<AppwriteInvoiceDocument>({
+          ...getInvoiceCollectionConfig(),
+          documentId: invoiceId,
+          data: input,
+          permissions: invoiceDocumentPermissions(userId),
+        }),
+      { context: { invoiceId, userId }, label: "Update invoice document" },
+    );
 
     return { ok: true, data: mapInvoiceDocument(document) };
   } catch (error) {
@@ -173,10 +196,14 @@ export async function deleteInvoiceDocumentForUser(
 
   try {
     const databases = createAdminDatabases();
-    await databases.deleteDocument({
-      ...getInvoiceCollectionConfig(),
-      documentId: invoiceId,
-    });
+    await withAppwriteRetry(
+      () =>
+        databases.deleteDocument({
+          ...getInvoiceCollectionConfig(),
+          documentId: invoiceId,
+        }),
+      { context: { invoiceId, userId }, label: "Delete invoice document" },
+    );
 
     return { ok: true, data: { id: invoiceId } };
   } catch (error) {

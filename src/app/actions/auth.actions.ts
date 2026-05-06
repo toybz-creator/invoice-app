@@ -15,11 +15,13 @@ import {
   createAdminUsers,
   createSessionAccount,
 } from "@/lib/appwrite/admin";
+import { withAppwriteRetry } from "@/lib/appwrite/retry";
 import {
   clearSessionCookie,
   getSessionSecret,
   setSessionCookie,
 } from "@/lib/appwrite/session";
+import { logDevelopmentError } from "@/lib/logger";
 
 export type AuthActionResult =
   | { ok: true; message: string }
@@ -79,13 +81,17 @@ async function getRequestOrigin() {
   return host ? `${protocol}://${host}` : "http://localhost:3000";
 }
 
-async function createSession(email: string, password: string, remember = true) {
-  const session = await createAdminAccount().createEmailPasswordSession({
-    email,
-    password,
-  });
+async function createSession(email: string, password: string) {
+  const session = await withAppwriteRetry(
+    () =>
+      createAdminAccount().createEmailPasswordSession({
+        email,
+        password,
+      }),
+    { context: { email }, label: "Create Appwrite email session" },
+  );
 
-  await setSessionCookie(session.secret, remember ? session.expire : undefined);
+  await setSessionCookie(session.secret, session.expire);
 }
 
 export async function loginAction(input: unknown): Promise<AuthActionResult> {
@@ -100,13 +106,12 @@ export async function loginAction(input: unknown): Promise<AuthActionResult> {
   }
 
   try {
-    await createSession(
-      parsed.data.email,
-      parsed.data.password,
-      parsed.data.remember,
-    );
+    await createSession(parsed.data.email, parsed.data.password);
     return { ok: true, message: "Signed in successfully." };
   } catch (error) {
+    logDevelopmentError("Login action failed", error, {
+      email: parsed.data.email,
+    });
     return { ok: false, error: authErrorMessage(error) };
   }
 }
@@ -133,6 +138,9 @@ export async function signupAction(input: unknown): Promise<AuthActionResult> {
 
     return { ok: true, message: "Account created successfully." };
   } catch (error) {
+    logDevelopmentError("Signup action failed", error, {
+      email: parsed.data.email,
+    });
     return { ok: false, error: authErrorMessage(error) };
   }
 }
@@ -154,11 +162,18 @@ export async function forgotPasswordAction(
     const origin = await getRequestOrigin();
     const resetUrl = new URL("/reset-password", origin);
 
-    await createAdminAccount().createRecovery({
+    await withAppwriteRetry(
+      () =>
+        createAdminAccount().createRecovery({
+          email: parsed.data.email,
+          url: resetUrl.toString(),
+        }),
+      { context: { email: parsed.data.email }, label: "Create recovery" },
+    );
+  } catch (error) {
+    logDevelopmentError("Password recovery request failed", error, {
       email: parsed.data.email,
-      url: resetUrl.toString(),
     });
-  } catch {
     // Keep this response neutral so registered emails cannot be enumerated.
   }
 
@@ -183,17 +198,27 @@ export async function resetPasswordAction(
   }
 
   try {
-    await createAdminAccount().updateRecovery({
-      userId: parsed.data.userId,
-      secret: parsed.data.secret,
-      password: parsed.data.password,
-    });
+    await withAppwriteRetry(
+      () =>
+        createAdminAccount().updateRecovery({
+          userId: parsed.data.userId,
+          secret: parsed.data.secret,
+          password: parsed.data.password,
+        }),
+      {
+        context: { userId: parsed.data.userId },
+        label: "Complete password recovery",
+      },
+    );
 
     return {
       ok: true,
       message: "Password updated. You can now sign in.",
     };
-  } catch {
+  } catch (error) {
+    logDevelopmentError("Password reset action failed", error, {
+      userId: parsed.data.userId,
+    });
     return {
       ok: false,
       error:
@@ -210,7 +235,8 @@ export async function logoutAction() {
       await createSessionAccount(sessionSecret).deleteSession({
         sessionId: "current",
       });
-    } catch {
+    } catch (error) {
+      logDevelopmentError("Logout could not delete Appwrite session", error);
       // The local cookie is still cleared when Appwrite has already expired it.
     }
   }

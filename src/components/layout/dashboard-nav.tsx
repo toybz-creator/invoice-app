@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  CircleHelp,
-  CreditCard,
-  FileText,
-  LayoutDashboard,
-  LogOut,
-  Settings,
-  WalletCards,
-} from "lucide-react";
+import { FileText, LayoutDashboard, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -17,9 +9,6 @@ import { logoutAction } from "@/app/actions/auth.actions";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/invoices", label: "Invoices", icon: FileText },
-  { href: "/dashboard", label: "Transactions", icon: CreditCard },
-  { href: "/dashboard", label: "My Wallets", icon: WalletCards },
-  { href: "/dashboard", label: "Settings", icon: Settings },
 ];
 
 export function DashboardNav() {
@@ -53,14 +42,7 @@ export function DashboardNav() {
         })}
       </nav>
 
-      <nav aria-label="Support navigation" className="space-y-0.5">
-        <Link
-          href="/dashboard"
-          className="flex h-[48px] w-[200px] items-center gap-3 rounded-lg px-[15px] text-sm font-medium text-[#929eae] transition hover:bg-white hover:text-[#1b212d]"
-        >
-          <CircleHelp className="size-5" />
-          Help
-        </Link>
+      <nav aria-label="Account navigation" className="space-y-0.5">
         <form action={logoutAction}>
           <button
             type="submit"

@@ -4,10 +4,12 @@ import { cookies } from "next/headers";
 import type { Models } from "node-appwrite";
 
 import { createSessionAccount } from "@/lib/appwrite/admin";
+import { withAppwriteRetry } from "@/lib/appwrite/retry";
 import {
   getSessionCookieName,
   getSessionCookieOptions,
 } from "@/lib/appwrite/session-cookie";
+import { logDevelopmentError } from "@/lib/logger";
 
 export function getCurrentSessionCookieName() {
   return getSessionCookieName(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID);
@@ -43,8 +45,12 @@ export async function getAuthenticatedUser(): Promise<Models.User<Models.Default
   }
 
   try {
-    return await createSessionAccount(sessionSecret).get();
-  } catch {
+    return await withAppwriteRetry(
+      () => createSessionAccount(sessionSecret).get(),
+      { label: "Verify Appwrite session" },
+    );
+  } catch (error) {
+    logDevelopmentError("Authenticated session could not be verified", error);
     return null;
   }
 }

@@ -187,10 +187,19 @@ Phase 3 authentication is implemented:
 The auth server actions use the server/admin Appwrite boundary to create users
 and email/password sessions. The returned Appwrite session secret is stored in
 an HttpOnly `a_session_<projectId>` cookie with `sameSite: "lax"`,
-production-only `secure`, root path, and the Appwrite session expiry. Proxy
+production-only `secure`, root path, and the Appwrite session expiry. Login
+persists this cookie by default; users should not be asked to sign in again
+unless they log out or the Appwrite session itself expires. Proxy
 checks only for the cookie so it remains fast and Edge-compatible; server code
 must call `getAuthenticatedUser()` before trusted reads or mutations to verify
 that the cookie still maps to a valid Appwrite session.
+
+Session verification and Appwrite database operations use
+`withAppwriteRetry()` from `src/lib/appwrite/retry.ts` to retry transient
+network, timeout, rate-limit, and server errors before surfacing a user-facing
+failure state. `APP_ENV=development` enables `src/lib/logger.ts` diagnostics for
+auth, session, read, and mutation failures; production logs stay quiet unless
+future observability tooling chooses to report sanitized events explicitly.
 
 The sign in and sign up screens were implemented from Maglo reference material.
 Required assets were captured locally under

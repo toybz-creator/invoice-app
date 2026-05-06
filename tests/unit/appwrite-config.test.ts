@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   formatAppwriteConfigError,
+  parseAppEnvironment,
   parsePublicAppwriteConfig,
   parseServerAppwriteConfig,
 } from "@/lib/appwrite/config";
@@ -43,5 +44,10 @@ describe("Appwrite config", () => {
       expect(formatAppwriteConfigError(error)).toContain("endpoint");
       expect(formatAppwriteConfigError(error)).not.toContain("server-key");
     }
+  });
+
+  it("parses the application environment key", () => {
+    expect(parseAppEnvironment({ APP_ENV: "development" })).toBe("development");
+    expect(parseAppEnvironment({ APP_ENV: "production" })).toBe("production");
   });
 });

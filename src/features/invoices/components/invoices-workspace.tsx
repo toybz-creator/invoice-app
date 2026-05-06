@@ -20,6 +20,7 @@ import {
   XCircle,
 } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { type ReactNode, useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 
@@ -609,6 +610,7 @@ export function InvoicesWorkspace({
   invoices,
   loadError,
 }: InvoicesWorkspaceProps) {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [filterOpen, setFilterOpen] = useState(false);
   const filter = useInvoiceUiStore((state) => state.filter);
@@ -691,6 +693,7 @@ export function InvoicesWorkspace({
 
       toast.success(result.message);
       closeActionMenu();
+      router.refresh();
     });
   }
 
@@ -709,6 +712,7 @@ export function InvoicesWorkspace({
 
       toast.success(result.message);
       closeDelete();
+      router.refresh();
     });
   }
 
