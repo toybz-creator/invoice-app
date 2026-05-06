@@ -247,25 +247,29 @@ Deliverables:
 - All/Paid/Unpaid filter using Zustand.
 - Status badges.
 - Empty, loading, and error states.
+- Internal pagination logic.
 
 Done when:
 
 - Table works on desktop and mobile.
 - Filter state does not pollute persisted server data.
+- Table handles its own pagination and item display.
 
 ### TASK-014: Build Edit, Delete, and Status Actions
 
 Deliverables:
 
-- Edit invoice dialog or page aligned with `docs/ui-design/invoice.png` where the flow uses a detail view.
+- Edit invoice dialog or page aligned with `docs/ui-design/invoice.png`.
 - Delete confirmation dialog.
 - Mark paid/unpaid control.
 - Accessible action buttons and menus.
+- Centralized operation logic within `InvoiceTable`.
 
 Done when:
 
 - Each action calls the correct server action.
 - UI handles success, failure, and pending states.
+- Actions are available wherever `InvoiceTable` is used.
 
 ## Phase 6: Dashboard
 

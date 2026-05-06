@@ -264,9 +264,17 @@ Maglo sidebar/topbar/table hierarchy, search, create button, filters, compact
 rows, paid/unpaid badge treatment, and accessible actions. Appwrite load
 failures now render inside the designed workspace instead of replacing the page
 with a standalone error card, and mobile uses invoice cards instead of a forced
-wide table. The implemented invoice edit flow uses an inline production panel
-rather than a separate detail route for this phase, preserving validation,
-accessibility, ownership checks, and responsive behavior.
+wide table.
+
+The `InvoiceTable` component acts as a central hub for all invoice-related
+operations. It encapsulates:
+- Responsive desktop and mobile table views.
+- Internal pagination logic derived from global UI store state.
+- Integrated dialogs for viewing, editing, and deleting invoices.
+- Server action handlers for status updates and deletions, including toast feedback.
+- Interactive action menus available in both the main workspace and dashboard views.
+
+This design keeps route files thin and ensures that functionality like "Mark as Paid" or "Edit" is available anywhere the table is rendered, such as the Dashboard's recent activity section.
 
 Phase 6 dashboard implementation:
 

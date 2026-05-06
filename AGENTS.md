@@ -115,11 +115,11 @@ Work task by task from `docs/task.md`. For each task:
 2. Identify data contracts, security requirements, edge cases, and test needs before coding.
 3. Implement the smallest complete production slice.
 4. Add or update unit, integration, and e2e tests appropriate to the risk.
-5. Update `README.md` and `docs/architecture-guide.md` when setup, scripts, environment variables, data flow, service boundaries, or architecture choices change.
+5. Update `README.md`, `docs/architecture-guide.md`, `docs/task.md`, and other relevant documents immediately after every task implementation to reflect changes in setup, scripts, environment variables, data flow, service boundaries, or architecture choices.
 6. Run quality checks that are available for the current project stage.
 7. Review your own generated code before moving to the next task.
 
-Do not mark a task complete until code, tests, documentation, and quality checks are handled or a clear blocker is documented.
+Do not mark a task complete until code, tests, documentation updates, and quality checks are handled or a clear blocker is documented. Every implementation task is a documentation task.
 
 ## 6. Production Depth Rules
 
@@ -294,13 +294,15 @@ type ActionResult<T> =
 
 ## 14. Documentation Rules
 
-Documentation is part of the deliverable:
+Documentation is part of the deliverable and must be updated in tandem with code changes:
 
 - Keep `README.md` current with setup, scripts, environment variables, Appwrite setup, testing, and Vercel deployment.
-- Keep `docs/architecture-guide.md` living and accurate.
+- Keep `docs/architecture-guide.md` living and accurate. Treat it as the technical source of truth.
+- Update `docs/task.md` and `docs/todo.md` to reflect current progress and any new technical discoveries or plan adjustments.
 - Document Appwrite collection schemas, indexes, permissions, and deployment environment variables.
 - Add in-code documentation for non-obvious financial calculations, server action security boundaries, realtime lifecycle behavior, and framework/vendor workarounds.
 - Do not add comments that simply narrate obvious code.
+- **Mandatory**: Every task implementation must be accompanied by relevant documentation updates before the task is considered finished.
 
 ## 15. Deployment and Vercel Rules
 
@@ -330,7 +332,7 @@ A feature is done only when:
 - It handles happy paths, edge cases, invalid input, empty states, loading states, errors, and negative paths.
 - It has appropriate unit, integration, and/or e2e tests.
 - It has been manually checked with `@browser_use` when UI is affected.
-- It updates documentation where needed.
+- It updates all relevant documentation (`README.md`, `docs/architecture-guide.md`, `docs/task.md`, etc.) to stay in sync with the implementation.
 - It passes available lint, typecheck, test, and build checks.
 - The agent has reviewed the generated code before handoff.
 
