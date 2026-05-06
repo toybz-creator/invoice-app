@@ -5,7 +5,4 @@
 - Use the local reference images in `docs/ui-design/` for UI tasks before coding: inspect the matching image, identify assets, implement with local conventions, and verify against the image in the browser.
 - During implementation, keep README setup/dependency docs, in-code documentation, unit tests, and e2e tests updated alongside code changes.
 
-- Graph and UI fixes across app
-- Responsiveness
-- Check VAT calculations etc
-- Installation guide and co in ReadMe
+

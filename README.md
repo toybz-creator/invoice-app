@@ -3,9 +3,9 @@
 Finance Management Dashboard built with Next.js, Appwrite, Zustand, ShadCN/UI,
 TailwindCSS, and Vercel.
 
-## Current Status
+## Features
 
-Phase 1 through Phase 7 are implemented:
+<br />
 
 - Next.js App Router with TypeScript strict mode and `src/`.
 - TailwindCSS v4 and ShadCN/UI initialized.
@@ -40,11 +40,10 @@ Phase 1 through Phase 7 are implemented:
 - Invoice creation/edit forms, responsive invoice table, all/paid/unpaid
   Zustand UI filters, mobile invoice cards, status controls, delete
   confirmation, empty/Appwrite-load-error states, and toast feedback.
-- Dashboard metric cards translated from `docs/ui-design/Dashboard.png`,
+- Dashboard metric cards&#x20;
   including total invoices, paid revenue, pending payments, total VAT
   collected, and monthly payable VAT from authenticated invoice rows.
-- Responsive Recharts dashboard visualizations for monthly revenue/VAT trend,
-  paid versus unpaid split, and status exposure, with typed empty states.
+- Responsive Recharts dashboard visualizations for monthly revenue/VAT trend and paid versus unpaid split.
 - Dashboard overdue and due-soon insight panels with due-date countdown labels.
 - Typed realtime contracts under `src/lib/realtime`, an Appwrite Realtime
   adapter, and a documented SSE/socket extension path.
@@ -52,9 +51,7 @@ Phase 1 through Phase 7 are implemented:
   with owner-filtered create/update/delete events, shared invoice store updates,
   connection status, cleanup on unmount, and retry behavior.
 
-Production e2e flows, authenticated browser visual verification, cross-tab
-realtime browser verification, and Vercel deployment are still pending later
-phases.
+  <br />
 
 ## Prerequisites
 
@@ -179,7 +176,7 @@ status: enum/string ["paid", "unpaid"], required
 paidAt: datetime/string, optional
 ```
 
-6. Add indexes:
+1. Add indexes:
 
 ```text
 userId
@@ -193,10 +190,10 @@ Do not add custom `createdAt` or `updatedAt` columns. The application uses
 Appwrite's system `$createdAt` and `$updatedAt` row metadata and sorts fetched
 invoices in the server helper.
 
-7. Configure table-level permissions so users cannot broadly read or write all
+1. Configure table-level permissions so users cannot broadly read or write all
    invoices. Invoice rows are created with owner-only read, update, and delete
    permissions in `invoiceRowPermissions(userId)`.
-8. Create a server API key for Vercel/local server actions and store it in
+2. Create a server API key for Vercel/local server actions and store it in
    `APPWRITE_API_KEY`. Never prefix this key with `NEXT_PUBLIC_`.
 
 The Appwrite helpers live under `src/lib/appwrite`:
@@ -235,39 +232,6 @@ is intentionally neutral so the UI does not reveal whether an email address is
 registered. Add the local and production app origins as Appwrite Web platforms
 so recovery callback URLs are accepted.
 
-## Design Workflow
+##
 
-The checked-in Maglo reference images are the UI source of truth for major
-screens. Use `docs/ui-design/Dashboard.png`,
-`docs/ui-design/Invoices.png`, and `docs/ui-design/invoice.png` for visual
-validation. Do not use Figma links or Figma MCP for design validation unless the
-project docs are intentionally changed first.
-
-Translate the local reference imagery into the app's Next.js, ShadCN/UI,
-TailwindCSS, TypeScript, and accessibility conventions, then verify desktop and
-mobile UI against the local images when the app can run.
-
-Phase 5 uses the checked-in `docs/ui-design/Invoices.png` and
-`docs/ui-design/invoice.png` references for invoice visual validation, keeps the
-Maglo mark at `public/figma/maglo-exclude.svg`, and translates the sidebar, top
-bar, search, create button, filter, table hierarchy, compact status badges,
-action placement, mobile cards, and in-workspace load-error state into the
-responsive invoice workspace. The shared auth screen uses
-`public/auth-hero.png`, `public/maglo-mark.svg`, and
-`public/auth-underline.svg`.
-
-Phase 6 uses `docs/ui-design/Dashboard.png` for the dashboard hierarchy: sidebar
-shell, metric cards, working-capital chart area, and recent invoice activity.
-The production implementation adds the required VAT metrics, paid/unpaid chart,
-status exposure chart, empty chart states, and overdue/due-soon panels. A
-browser visual pass still requires a configured authenticated Appwrite session.
-
-Browser verification is represented by the Playwright route protection smoke
-test. End-to-end credential submission still requires configured Appwrite
-environment variables and a test Appwrite project.
-
-## Known Audit Status
-
-`npm audit` currently reports two moderate findings through Next.js' bundled
-PostCSS dependency. npm suggests `npm audit fix --force`, but that would
-downgrade Next.js to an old breaking version, so it has not been applied.
+##
