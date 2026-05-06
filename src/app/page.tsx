@@ -16,8 +16,8 @@ export default function HomePage() {
           <p className="max-w-2xl text-lg leading-8 text-muted-foreground">
             Phase 1 establishes the Next.js App Router foundation for the
             Appwrite-backed finance application. Authentication, invoice
-            persistence, realtime updates, and Figma-fidelity screens will land
-            in later implementation phases.
+            persistence, realtime updates, and Maglo-aligned screens are built
+            from the local design references as the product matures.
           </p>
         </div>
 

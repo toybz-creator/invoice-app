@@ -144,7 +144,7 @@ export function buildMonthlySummary(
 
     const paidDate = invoice.paidAt
       ? new Date(invoice.paidAt)
-      : new Date(invoice.updatedAt);
+      : new Date(invoice.$updatedAt);
     const key = `${paidDate.getFullYear()}-${String(
       paidDate.getMonth() + 1,
     ).padStart(2, "0")}`;

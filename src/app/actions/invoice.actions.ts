@@ -68,7 +68,6 @@ export async function createInvoiceAction(
     };
   }
 
-  const now = new Date().toISOString();
   const financials = calculateInvoiceFinancials(
     parsed.data.amount,
     parsed.data.vatRate,
@@ -80,9 +79,7 @@ export async function createInvoiceAction(
     clientEmail: parsed.data.clientEmail,
     dueDate: normalizeDueDate(parsed.data.dueDate),
     status: parsed.data.status,
-    paidAt: parsed.data.status === "paid" ? now : null,
-    $createdAt: now,
-    $updatedAt: now,
+    paidAt: parsed.data.status === "paid" ? new Date().toISOString() : null,
     ...financials,
   });
 
@@ -132,7 +129,6 @@ export async function editInvoiceAction(
     dueDate: normalizeDueDate(parsed.data.dueDate),
     status: parsed.data.status,
     paidAt: parsed.data.status === "paid" ? now : null,
-    $updatedAt: now,
     ...financials,
   });
 
@@ -210,11 +206,9 @@ export async function updateInvoiceStatusAction(
     };
   }
 
-  const now = new Date().toISOString();
   const result = await updateInvoiceDocumentForUser(parsed.data.id, user.$id, {
     status: parsed.data.status,
-    paidAt: parsed.data.status === "paid" ? now : null,
-    $updatedAt: now,
+    paidAt: parsed.data.status === "paid" ? new Date().toISOString() : null,
   });
 
   if (!result.ok) {

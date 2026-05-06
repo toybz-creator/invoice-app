@@ -19,8 +19,8 @@ const baseInvoice: Invoice = {
   total: 1075,
   dueDate: "2026-05-20T00:00:00.000Z",
   status: "paid",
-  createdAt: "2026-05-01T00:00:00.000Z",
-  updatedAt: "2026-05-02T00:00:00.000Z",
+  $createdAt: "2026-05-01T00:00:00.000Z",
+  $updatedAt: "2026-05-02T00:00:00.000Z",
   paidAt: "2026-05-02T00:00:00.000Z",
 };
 

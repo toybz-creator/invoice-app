@@ -21,8 +21,8 @@ Phase 1 through Phase 5 are implemented:
 - HttpOnly Appwrite session cookie handling for server actions and middleware.
 - Next.js Proxy route protection, the current Next.js convention for
   middleware-style dashboard and invoice route gating.
-- React Hook Form and Zod auth forms translated from the Maglo Figma sign in
-  and sign up frames, with inline errors, pending states, and toast feedback.
+- React Hook Form and Zod auth forms translated from local Maglo reference
+  imagery, with inline errors, pending states, and toast feedback.
 - Runtime validation for required Appwrite environment variables.
 - Typed invoice document helpers with owner-scoped permissions.
 - Reproducible Appwrite database, collection, attribute, index, and permission
@@ -149,8 +149,6 @@ vatAmount: float, required
 total: float, required
 dueDate: datetime/string, required
 status: enum/string ["paid", "unpaid"], required
-createdAt: datetime/string, required
-updatedAt: datetime/string, required
 paidAt: datetime/string, optional
 ```
 
@@ -162,8 +160,11 @@ status
 dueDate
 userId_status
 userId_dueDate
-createdAt
 ```
+
+Do not add custom `createdAt` or `updatedAt` attributes. The application uses
+Appwrite's system `$createdAt` and `$updatedAt` document metadata and sorts
+fetched invoices in the server helper.
 
 7. Configure collection-level permissions so users cannot broadly read or write
    all invoices. Invoice documents are created with owner-only read, update, and
@@ -199,27 +200,24 @@ so recovery callback URLs are accepted.
 
 ## Design Workflow
 
-The Maglo Financial Management Web UI Kit Figma frames are the UI source of
-truth for sign in, sign up, dashboard, invoice list, and invoice detail screens.
+The checked-in Maglo reference images are the UI source of truth for major
+screens. Use `docs/ui-design/Dashboard.png`,
+`docs/ui-design/Invoices.png`, and `docs/ui-design/invoice.png` for visual
+validation. Do not use Figma links or Figma MCP for design validation unless the
+project docs are intentionally changed first.
 
-Before building or materially changing those screens, use the Codex `@Figma`
-plugin to fetch the exact frame's structured design context, capture a
-screenshot, and identify required assets. Translate the result into the app's
-Next.js, ShadCN/UI, TailwindCSS, TypeScript, and accessibility conventions, then
-verify desktop and mobile UI against the Figma screenshot when the local app can
-run.
+Translate the local reference imagery into the app's Next.js, ShadCN/UI,
+TailwindCSS, TypeScript, and accessibility conventions, then verify desktop and
+mobile UI against the local images when the app can run.
 
-Phase 3 used the Figma workflow for the sign in node `122:1782` and sign up
-node `134:2419`, including structured design context, screenshots, and local
-asset capture. Phase 5 now uses the checked-in `docs/ui-design/Invoices.png`
-and `docs/ui-design/invoice.png` references for invoice visual validation
-without Figma MCP calls, keeps the Maglo mark at
-`public/figma/maglo-exclude.svg`, and translates the sidebar, top bar, search,
-create button, filter, table hierarchy, compact status badges, action
-placement, mobile cards, and in-workspace load-error state into the responsive
-invoice workspace. The shared auth screen uses
+Phase 5 uses the checked-in `docs/ui-design/Invoices.png` and
+`docs/ui-design/invoice.png` references for invoice visual validation, keeps the
+Maglo mark at `public/figma/maglo-exclude.svg`, and translates the sidebar, top
+bar, search, create button, filter, table hierarchy, compact status badges,
+action placement, mobile cards, and in-workspace load-error state into the
+responsive invoice workspace. The shared auth screen uses
 `public/auth-hero.png`, `public/maglo-mark.svg`, and
-`public/auth-underline.svg` instead of short-lived Figma URLs.
+`public/auth-underline.svg`.
 
 Browser verification is represented by the Playwright route protection smoke
 test. End-to-end credential submission still requires configured Appwrite

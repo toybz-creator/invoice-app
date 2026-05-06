@@ -137,27 +137,21 @@ Allow users to:
 
 ### 🎯 Design References
 
-Use the Maglo Financial Management Web UI Kit Figma file as the visual source of truth for the product UI. When implementing a screen, use the Codex `@Figma` plugin against the exact matching frame before coding, then preserve the design's layout, spacing, hierarchy, component composition, assets, and responsive intent while still satisfying accessibility, validation, loading, empty, and error-state requirements.
+Use the checked-in Maglo reference images in `docs/ui-design/` as the visual
+source of truth for the product UI. Do not use Figma links or Figma MCP for
+design validation unless the product documents are intentionally changed first.
 
-Required Codex `@Figma` workflow for every screen listed below:
+Canonical local references:
 
-1. Fetch structured design context for the exact frame or node.
-2. Capture a Figma screenshot for visual comparison.
-3. Download or reference required Figma-provided assets instead of using placeholders.
-4. Translate the design into this app's Next.js, ShadCN/UI, TailwindCSS, and accessibility conventions.
-5. Compare the built UI against the Figma screenshot in desktop and mobile browser states.
+- Dashboard: `docs/ui-design/Dashboard.png`
+- Invoices list: `docs/ui-design/Invoices.png`
+- Invoice detail / create-edit surface: `docs/ui-design/invoice.png`
 
-In Codex terms, this means using the `@Figma` workflow to run design-context retrieval and screenshot capture, then implementation. Record any Figma access, asset, or visual-parity gap in the final handoff and, when architectural, in `docs/architecture-guide.md`.
-
-Canonical Figma frames:
-
-- Sign in: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=122-1782&t=LudK3VlLncYCZtMA-4>
-- Sign up: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=134-2419&t=LudK3VlLncYCZtMA-4>
-- Dashboard: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=36-569&t=LudK3VlLncYCZtMA-4>
-- Invoices list: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=51-1249&t=LudK3VlLncYCZtMA-4>
-- Invoice detail: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=59-1718&t=LudK3VlLncYCZtMA-4>
-
-Fallback file entry point, if a frame link changes: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=0-1&t=LudK3VlLncYCZtMA-4>
+When implementing a screen, inspect the matching local image, preserve the
+layout, spacing, hierarchy, component composition, assets, and responsive intent,
+and still satisfy accessibility, validation, loading, empty, and error-state
+requirements. Record any missing local image or visual-parity gap in the final
+handoff and, when architectural, in `docs/architecture-guide.md`.
 
 ***
 

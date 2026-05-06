@@ -20,33 +20,39 @@ The core architectural rule is simple: Appwrite and server actions own persisted
 
 ## 2.1 UI Design References
 
-The Maglo Financial Management Web UI Kit Figma file is the canonical visual reference for the application shell and major screens. Implementation should translate the referenced frames into accessible, responsive, production-ready Next.js UI instead of creating unrelated layouts.
+The checked-in Maglo reference images under `docs/ui-design/` are the canonical
+visual reference for the application shell and major screens. Implementation
+should translate those images into accessible, responsive, production-ready
+Next.js UI instead of creating unrelated layouts.
 
 Screen mapping:
 
-- `/login`: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=122-1782&t=LudK3VlLncYCZtMA-4>
-- `/signup`: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=134-2419&t=LudK3VlLncYCZtMA-4>
-- `/dashboard`: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=36-569&t=LudK3VlLncYCZtMA-4>
-- `/invoices`: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=51-1249&t=LudK3VlLncYCZtMA-4>
-- `/invoices/[id]` or invoice detail view: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=59-1718&t=LudK3VlLncYCZtMA-4>
+- `/dashboard`: `docs/ui-design/Dashboard.png`
+- `/invoices`: `docs/ui-design/Invoices.png`
+- Invoice detail / create-edit surface: `docs/ui-design/invoice.png`
 
-Use Figma for layout, spacing, visual hierarchy, color intent, and component composition. Use ShadCN/UI, TailwindCSS, semantic HTML, and tested application state to add missing production states such as validation errors, loading, empty states, destructive confirmations, permission failures, and realtime status.
+Do not use Figma links or Figma MCP for design validation unless the product
+docs are intentionally changed first. Use the local images for layout, spacing,
+visual hierarchy, color intent, and component composition. Use ShadCN/UI,
+TailwindCSS, semantic HTML, and tested application state to add missing
+production states such as validation errors, loading, empty states, destructive
+confirmations, permission failures, and realtime status.
 
-### 2.2 Codex `@Figma` Implementation Workflow
+### 2.2 Local Image Implementation Workflow
 
-For every UI task touching a mapped screen, use the Codex `@Figma` plugin before implementation:
+For every UI task touching a mapped screen:
 
-1. Fetch structured design context for the exact Figma node.
-2. Capture a screenshot for the same node and viewport variant.
-3. Download or reference Figma-provided assets, icons, and SVGs needed for the screen.
-4. Map Figma structure to this app's route, feature, and component boundaries.
-5. Implement with ShadCN/UI primitives, TailwindCSS tokens, semantic HTML, and accessible interaction states.
-6. Add production states missing from the design in the same visual language.
-7. Verify the local UI against the Figma screenshot with browser testing on desktop and mobile.
+1. Inspect the matching local image under `docs/ui-design/`.
+2. Identify any existing local assets used by the screen.
+3. Map the image structure to this app's route, feature, and component boundaries.
+4. Implement with ShadCN/UI primitives, TailwindCSS tokens, semantic HTML, and accessible interaction states.
+5. Add production states missing from the design in the same visual language.
+6. Verify the local UI against the reference image with browser testing on desktop and mobile.
 
-The `@Figma` output should not be pasted directly as final code. Treat it as design context to translate into the established architecture, typed data flow, form handling, realtime strategy, and component conventions. When Figma access, assets, or screenshots are unavailable, document the gap and proceed from the canonical frame links and existing design decisions.
-
-When the plugin exposes Figma MCP actions, the expected calls are `get_design_context` for structure and measurements, `get_screenshot` for visual comparison, and asset download/reference only for the assets used by the target frame.
+The local reference image should be treated as design context to translate into
+the established architecture, typed data flow, form handling, realtime strategy,
+and component conventions. If a local reference image is unavailable, document
+the gap and proceed from the existing app design language.
 
 ## 3. Suggested Project Structure
 
@@ -133,7 +139,7 @@ The app is scaffolded with Next.js `16.2.4`, React `19.2.4`, TypeScript strict m
 - `src/stores` for focused Zustand UI state.
 - `tests/unit`, `tests/integration`, and `tests/e2e` for the planned quality layers.
 
-Phase 1 route pages are placeholders only. They intentionally do not implement final Maglo Figma fidelity, Appwrite authentication, invoice persistence, middleware protection, or realtime behavior. Those are scheduled for later phases and must follow the Figma and security workflows in this guide.
+Phase 1 route pages are placeholders only. They intentionally do not implement final Maglo visual fidelity, Appwrite authentication, invoice persistence, middleware protection, or realtime behavior. Those are scheduled for later phases and must follow the local UI reference and security workflows in this guide.
 
 Browser verification for these placeholder route shells was skipped during Phase 1 handoff per user request. Playwright smoke coverage is present in `tests/e2e/foundation.spec.ts` for later browser verification.
 
@@ -166,7 +172,7 @@ Phase 3 authentication is implemented:
 - `src/features/auth/schemas/auth.schema.ts` defines shared Zod login and
   signup schemas.
 - `src/features/auth/components` contains the React Hook Form auth forms and
-  Figma-derived auth presentation components.
+  Maglo-derived auth presentation components.
 - `src/app/actions/auth.actions.ts` owns signup, login, and logout server
   actions, plus password recovery request and completion actions.
 - `src/lib/appwrite/admin.ts` exposes admin and session-scoped Appwrite account
@@ -186,11 +192,10 @@ checks only for the cookie so it remains fast and Edge-compatible; server code
 must call `getAuthenticatedUser()` before trusted reads or mutations to verify
 that the cookie still maps to a valid Appwrite session.
 
-The sign in and sign up screens were implemented from the Maglo Figma nodes
-`122:1782` and `134:2419`. Required assets were captured locally under
+The sign in and sign up screens were implemented from Maglo reference material.
+Required assets were captured locally under
 `public/auth-hero.png`, `public/maglo-mark.svg`, and
-`public/auth-underline.svg` so the app does not depend on short-lived Figma
-asset URLs. The implementation preserves the reference hierarchy while adding
+`public/auth-underline.svg`. The implementation preserves the reference hierarchy while adding
 accessible labels, inline validation errors, disabled pending states, toast
 feedback, and responsive behavior.
 
@@ -235,8 +240,7 @@ Phase 4 and Phase 5 introduce the invoice domain and invoice workspace:
   dashboard phase.
 
 The Phase 5 invoice UI was revalidated against the local reference images in
-`docs/ui-design/Invoices.png` and `docs/ui-design/invoice.png` for this pass,
-without Figma MCP calls. The Maglo mark asset remains local at
+`docs/ui-design/Invoices.png` and `docs/ui-design/invoice.png`. The Maglo mark asset remains local at
 `public/figma/maglo-exclude.svg`. The invoice workspace preserves the
 Maglo sidebar/topbar/table hierarchy, search, create button, filters, compact
 rows, paid/unpaid badge treatment, and accessible actions. Appwrite load
@@ -301,9 +305,11 @@ total: number
 dueDate: datetime/string
 status: enum("paid", "unpaid")
 paidAt: datetime/string/null
-createdAt: datetime/string
-updatedAt: datetime/string
 ```
+
+The application uses Appwrite's built-in `$createdAt` and `$updatedAt` document
+metadata for invoice timestamps. Do not create custom `createdAt` or
+`updatedAt` collection attributes.
 
 Recommended indexes:
 
@@ -312,7 +318,6 @@ Recommended indexes:
 - `dueDate`
 - `userId_status`
 - `userId_dueDate`
-- `createdAt`
 
 ### 5.4 Permissions
 

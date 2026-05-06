@@ -22,7 +22,7 @@ type ListInvoicesOptions = {
 export type CreateInvoiceDocumentInput = InvoiceDocumentData;
 
 export type UpdateInvoiceDocumentInput = Partial<
-  Omit<InvoiceDocumentData, "userId" | "createdAt">
+  Omit<InvoiceDocumentData, "userId">
 >;
 
 function mapInvoiceDocument(document: AppwriteInvoiceDocument): Invoice {
@@ -61,7 +61,6 @@ export async function listInvoiceDocumentsByUser(
     const collectionConfig = getInvoiceCollectionConfig();
     const queries = [
       Query.equal("userId", userId),
-      Query.orderDesc("createdAt"),
       Query.limit(options.limit ?? 50),
     ];
 
@@ -82,7 +81,13 @@ export async function listInvoiceDocumentsByUser(
     return {
       ok: true,
       data: {
-        invoices: response.documents.map(mapInvoiceDocument),
+        invoices: response.documents
+          .map(mapInvoiceDocument)
+          .sort(
+            (first, second) =>
+              new Date(second.$createdAt).getTime() -
+              new Date(first.$createdAt).getTime(),
+          ),
         total: response.total,
       },
     };
@@ -126,7 +131,6 @@ export async function createInvoiceDocument(
 
     return { ok: true, data: mapInvoiceDocument(document) };
   } catch (error) {
-    console.log(toAppwriteError(error));
     return toAppwriteError(error);
   }
 }

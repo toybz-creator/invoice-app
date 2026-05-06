@@ -6,25 +6,24 @@ Build the Finance Management Dashboard task by task until it is production-ready
 
 Each task should be completed with code, tests where relevant, and documentation updates before moving to the next major phase.
 
-## Figma References for UI Tasks
+## UI References for UI Tasks
 
-Use these Figma frames through the Codex `@Figma` plugin before implementing or materially changing the corresponding screens:
+Use the checked-in images in `docs/ui-design/` before implementing or materially
+changing the corresponding screens. Do not use Figma links or Figma MCP for
+design validation unless the product documents are intentionally changed first.
 
-- Sign in: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=122-1782&t=LudK3VlLncYCZtMA-4>
-- Sign up: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=134-2419&t=LudK3VlLncYCZtMA-4>
-- Dashboard: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=36-569&t=LudK3VlLncYCZtMA-4>
-- Invoices list: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=51-1249&t=LudK3VlLncYCZtMA-4>
-- Invoice detail: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=59-1718&t=LudK3VlLncYCZtMA-4>
+- Dashboard: `docs/ui-design/Dashboard.png`
+- Invoices list: `docs/ui-design/Invoices.png`
+- Invoice detail / create-edit surface: `docs/ui-design/invoice.png`
 
 Required UI task workflow:
 
-1. Use Codex `@Figma` to fetch structured design context for the exact frame, using `get_design_context` when available.
-2. Capture the matching Figma screenshot, using `get_screenshot` when available.
-3. Identify and use required Figma assets rather than placeholders.
-4. Translate the frame into this app's Next.js, ShadCN/UI, TailwindCSS, TypeScript, and accessibility patterns.
-5. Add missing production states, including loading, empty, error, validation, disabled, realtime-disconnected, and confirmation states.
-6. Run browser verification against the Figma screenshot on desktop and mobile when a local server and any required credentials are available.
-7. Record any `@Figma` access or visual verification gap in the final handoff.
+1. Inspect the matching local reference image.
+2. Identify and use required local assets rather than placeholders.
+3. Translate the image into this app's Next.js, ShadCN/UI, TailwindCSS, TypeScript, and accessibility patterns.
+4. Add missing production states, including loading, empty, error, validation, disabled, realtime-disconnected, and confirmation states.
+5. Run browser verification against the local reference image on desktop and mobile when a local server and any required credentials are available.
+6. Record any missing-image or visual verification gap in the final handoff.
 
 ## Phase 1: Project Foundation
 
@@ -129,8 +128,8 @@ Deliverables:
 
 - Login schema.
 - Signup schema.
-- Login form using React Hook Form and Zod, matching the Sign in Figma frame.
-- Signup form using React Hook Form and Zod, matching the Sign up Figma frame.
+- Login form using React Hook Form and Zod, matching the local Maglo auth reference.
+- Signup form using React Hook Form and Zod, matching the local Maglo auth reference.
 - Loading, inline error, and toast states.
 
 Done when:
@@ -244,7 +243,7 @@ Done when:
 
 Deliverables:
 
-- Responsive invoice table matching the Invoices list Figma frame.
+- Responsive invoice table matching `docs/ui-design/Invoices.png`.
 - All/Paid/Unpaid filter using Zustand.
 - Status badges.
 - Empty, loading, and error states.
@@ -258,7 +257,7 @@ Done when:
 
 Deliverables:
 
-- Edit invoice dialog or page aligned with the Invoice detail Figma frame where the flow uses a detail view.
+- Edit invoice dialog or page aligned with `docs/ui-design/invoice.png` where the flow uses a detail view.
 - Delete confirmation dialog.
 - Mark paid/unpaid control.
 - Accessible action buttons and menus.
@@ -274,7 +273,7 @@ Done when:
 
 Deliverables:
 
-- Dashboard layout and metric cards matching the Dashboard Figma frame.
+- Dashboard layout and metric cards matching `docs/ui-design/Dashboard.png`.
 - Total invoices metric.
 - Total paid amount metric.
 - Pending payments metric.

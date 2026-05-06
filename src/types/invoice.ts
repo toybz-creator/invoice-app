@@ -20,7 +20,10 @@ export type Invoice = {
   paidAt: string | null;
 };
 
-export type InvoiceDocumentData = Omit<Invoice, "id">;
+export type InvoiceDocumentData = Omit<
+  Invoice,
+  "id" | "$createdAt" | "$updatedAt"
+>;
 
 export type AppwriteInvoiceDocument = Models.Document & InvoiceDocumentData;
 

@@ -15,17 +15,23 @@ Before coding, read the relevant docs and keep them aligned with the implementat
 
 If code and docs disagree, stop and reconcile the mismatch. Either update the code to match the docs or update the docs with the new decision and reason.
 
-### Figma Design Source of Truth
+### UI Design Source of Truth
 
-Use the Maglo Financial Management Web UI Kit Figma frames as the canonical UI references. Before implementing or materially changing any listed screen, use the Codex `@Figma` plugin to inspect the matching Figma frame and translate it into accessible, responsive, production-ready UI.
+Use the checked-in Maglo reference images in `docs/ui-design/` as the canonical
+UI references. Do not use Figma links or Figma MCP for design validation in this
+repository unless the product direction changes and the docs are updated first.
 
-- Sign in: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=122-1782&t=LudK3VlLncYCZtMA-4>
-- Sign up: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=134-2419&t=LudK3VlLncYCZtMA-4>
-- Dashboard: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=36-569&t=LudK3VlLncYCZtMA-4>
-- Invoices list: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=51-1249&t=LudK3VlLncYCZtMA-4>
-- Invoice detail: <https://www.figma.com/design/fjLI67zOWLAkFMJuE1TKNt/Maglo---Financial-Management-Web-UI-Kit--Community---Copy---Copy-?node-id=59-1718&t=LudK3VlLncYCZtMA-4>
+- Dashboard: `docs/ui-design/Dashboard.png`
+- Invoices list: `docs/ui-design/Invoices.png`
+- Invoice detail / create-edit surface: `docs/ui-design/invoice.png`
 
-When Figma access is available, the required workflow is: fetch structured design context for the exact node, capture a screenshot, identify required assets, implement using this app's Next.js/ShadCN/UI/Tailwind conventions, and compare the built UI against the Figma screenshot in browser verification. With Figma MCP actions, use `get_design_context` before implementation and `get_screenshot` for visual comparison. If access is unavailable, continue from the documented references and record the verification gap in the handoff. Do not let visual fidelity override accessibility, security, validation, loading/error/empty states, or the architecture rules.
+Before implementing or materially changing a mapped screen, inspect the matching
+local image, translate it into accessible and responsive production UI using this
+app's Next.js/ShadCN/UI/Tailwind conventions, and compare the built UI against
+the local image in browser verification. If a local reference image is missing,
+continue from the existing app design language and record the verification gap
+in the handoff. Do not let visual fidelity override accessibility, security,
+validation, loading/error/empty states, or the architecture rules.
 
 ## 2. Agent Mindset
 
@@ -142,8 +148,8 @@ The invoice model must include:
 - `total`
 - `dueDate`
 - `status`
-- `createdAt`
-- `updatedAt`
+- `$createdAt`
+- `$updatedAt`
 - `paidAt`
 
 Status values are `paid` and `unpaid`.
@@ -207,7 +213,7 @@ Use Zustand narrowly and deliberately:
 
 ## 11. UI, UX, Accessibility, and Browser Testing
 
-Match the Figma reference from the PRD while preserving accessibility and responsive behavior.
+Match the local UI reference images from `docs/ui-design/` while preserving accessibility and responsive behavior.
 
 UI rules:
 
@@ -224,7 +230,7 @@ Browser verification:
 - Use Codex `@browser_use` or the browser-use plugin to inspect developed UI in the browser.
 - Test desktop and mobile responsive states.
 - Manually exercise every developed feature after implementation.
-- For Figma-related UI work, compare against the Figma reference and adjust spacing, layout, hierarchy, and responsive behavior.
+- For UI work, compare against the matching local reference image and adjust spacing, layout, hierarchy, and responsive behavior.
 - Record any browser testing gaps in the final handoff if a local server, credentials, or environment variables are unavailable.
 
 ## 12. Testing Rules
@@ -328,4 +334,4 @@ A feature is done only when:
 - It passes available lint, typecheck, test, and build checks.
 - The agent has reviewed the generated code before handoff.
 
-The whole project is done only when the app is authenticated, secure, real-time, documented, tested, deployable on Vercel, backed by Appwrite, responsive against the Figma reference, and smoke-tested end to end.
+The whole project is done only when the app is authenticated, secure, real-time, documented, tested, deployable on Vercel, backed by Appwrite, responsive against the local UI reference images, and smoke-tested end to end.
