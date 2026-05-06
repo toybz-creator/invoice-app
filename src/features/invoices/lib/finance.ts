@@ -35,6 +35,13 @@ const currencyFormatter = new Intl.NumberFormat("en-NG", {
   maximumFractionDigits: 2,
 });
 
+/**
+ * Rounds a number to 2 decimal places using Number.EPSILON to avoid
+ * common floating point rounding issues (e.g., 1.005 rounding incorrectly).
+ *
+ * All financial values in the app should pass through this or a
+ * utility that calls this.
+ */
 function roundCurrency(value: number) {
   return Math.round((value + Number.EPSILON) * 100) / 100;
 }
@@ -47,6 +54,13 @@ export function calculateInvoiceTotal(amount: number, vatRate: number) {
   return roundCurrency(amount + calculateVatAmount(amount, vatRate));
 }
 
+/**
+ * Calculates VAT and Total for an invoice amount and rate.
+ *
+ * This is the central source of truth for invoice financial calculations.
+ * It is used by both Server Actions (for persistence) and client components
+ * (for previews).
+ */
 export function calculateInvoiceFinancials(
   amount: number,
   vatRate: number,

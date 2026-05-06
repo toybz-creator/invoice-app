@@ -38,6 +38,19 @@ export async function getSessionSecret() {
   return cookieStore.get(getCurrentSessionCookieName())?.value ?? null;
 }
 
+/**
+ * Retrieves the authenticated user for the current request.
+ * 
+ * Performance:
+ * - Uses React's `cache()` to memoize the session verification within 
+ *   a single request lifecycle (e.g., shared across multiple server 
+ *   components or actions).
+ * 
+ * Security:
+ * - Reads the session secret from a secure HttpOnly cookie.
+ * - Verifies the secret directly with Appwrite's API.
+ * - Returns null if the session is missing, expired, or invalid.
+ */
 export const getAuthenticatedUser = cache(
   async (): Promise<Models.User<Models.DefaultPreferences> | null> => {
     const sessionSecret = await getSessionSecret();

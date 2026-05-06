@@ -42,6 +42,15 @@ async function requireAuthenticatedUser() {
   return user;
 }
 
+/**
+ * Trusted mutation boundary for creating a new invoice.
+ *
+ * Security:
+ * - Verifies the authenticated user via Appwrite session.
+ * - Validates input using Zod schema.
+ * - Recalculates all financial derived fields (VAT, Total) server-side to prevent tampering.
+ * - Assigns the owner-only userId from the trusted session.
+ */
 export async function createInvoiceAction(
   input: unknown,
 ): Promise<InvoiceActionResult> {
@@ -89,6 +98,15 @@ export async function createInvoiceAction(
   };
 }
 
+/**
+ * Trusted mutation boundary for editing an existing invoice.
+ *
+ * Security:
+ * - Verifies the authenticated user via Appwrite session.
+ * - Validates input using Zod schema.
+ * - Enforces row ownership by passing the trusted userId to the Appwrite database helper.
+ * - Recalculates all financial derived fields (VAT, Total) server-side.
+ */
 export async function editInvoiceAction(
   input: unknown,
 ): Promise<InvoiceActionResult> {

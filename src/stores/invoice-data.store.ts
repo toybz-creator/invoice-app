@@ -67,8 +67,18 @@ function normalizeRealtimeInvoice(row: Invoice | AppwriteInvoiceRow): Invoice {
   };
 }
 
+/**
+ * Central client-side store for invoice data.
+ *
+ * This store implements the "Fetch Once, Sync Everywhere" strategy.
+ * It is seeded once by the dashboard layout and then kept in sync
+ * via Server Action results and Appwrite Realtime events.
+ */
 export const useInvoiceDataStore = create<InvoiceDataState>((set) => ({
   ...initialState,
+  /**
+   * Performs the initial data hydration.
+   */
   setInitialInvoices: ({ userId, invoices, total, loadError = null }) =>
     set({
       invoices: sortInvoices(invoices),
@@ -76,6 +86,10 @@ export const useInvoiceDataStore = create<InvoiceDataState>((set) => ({
       loadError,
       initializedUserId: userId,
     }),
+  /**
+   * Updates or inserts an invoice in the local store.
+   * Used by Server Actions to provide immediate UI feedback.
+   */
   upsertInvoice: (invoice) =>
     set((state) => {
       const exists = state.invoices.some((item) => item.id === invoice.id);
@@ -91,6 +105,9 @@ export const useInvoiceDataStore = create<InvoiceDataState>((set) => ({
         loadError: null,
       };
     }),
+  /**
+   * Removes an invoice from the local store.
+   */
   removeInvoice: (invoiceId) =>
     set((state) => {
       const exists = state.invoices.some((invoice) => invoice.id === invoiceId);
@@ -100,6 +117,16 @@ export const useInvoiceDataStore = create<InvoiceDataState>((set) => ({
         total: exists ? Math.max(0, state.total - 1) : state.total,
       };
     }),
+  /**
+   * Applies an incoming Appwrite Realtime payload to the local store.
+   *
+   * Logic:
+   * 1. Normalizes the incoming row (handling differences between Appwrite's
+   *    raw document and the application's Invoice type).
+   * 2. Verifies ownership (userId) to prevent cross-user data leakage
+   *    in shared browser sessions.
+   * 3. Handles 'create', 'update', and 'delete' events.
+   */
   applyRealtimePayload: (payload, userId) =>
     set((state) => {
       const invoice = normalizeRealtimeInvoice(payload.data);

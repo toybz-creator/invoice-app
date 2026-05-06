@@ -8,10 +8,23 @@ import type {
   RealtimeSubscription,
 } from "./types";
 
+/**
+ * Creates a RealtimeAdapter implementation for Appwrite.
+ * 
+ * This adapter maps Appwrite's event-based realtime system into a 
+ * generic, typed interface used by the application features.
+ */
 export const createAppwriteRealtimeAdapter = (): RealtimeAdapter => {
   const realtime = getBrowserRealtime();
 
   return {
+    /**
+     * Subscribes to an Appwrite channel and maps incoming events to internal types.
+     * 
+     * @param channel The Appwrite channel to subscribe to (e.g., 'databases.default.collections.invoices.documents')
+     * @param callback Function to execute when a mapped event arrives
+     * @param options Error handling and lifecycle callbacks
+     */
     subscribe: <T>(
       channel: string,
       callback: RealtimeCallback<T>,
