@@ -4,8 +4,6 @@ import type { ReactNode } from "react";
 import {
   Area,
   AreaChart,
-  Bar,
-  BarChart,
   CartesianGrid,
   Cell,
   Pie,
@@ -211,7 +209,7 @@ export function DashboardCharts({
                   {statusSummary.map((entry) => (
                     <Cell
                       key={entry.status}
-                      fill={statusColors[entry.status]}
+                      fill={statusColors[entry.status as keyof typeof statusColors]}
                     />
                   ))}
                 </Pie>
@@ -243,7 +241,7 @@ export function DashboardCharts({
                 <span className="inline-flex items-center gap-2 capitalize text-[#1b212d]">
                   <span
                     className="size-2 rounded-full"
-                    style={{ backgroundColor: statusColors[point.status] }}
+                    style={{ backgroundColor: statusColors[point.status as keyof typeof statusColors] }}
                   />
                   {point.status}
                 </span>
@@ -256,75 +254,13 @@ export function DashboardCharts({
                   className="h-2 rounded-full"
                   style={{
                     width: `${hasStatusData ? Math.max((point.count / Math.max(...statusSummary.map((item) => item.count))) * 100, point.count > 0 ? 8 : 0) : 0}%`,
-                    backgroundColor: statusColors[point.status],
+                    backgroundColor: statusColors[point.status as keyof typeof statusColors],
                   }}
                 />
               </div>
             </div>
           ))}
         </div>
-      </section>
-
-      <section
-        className="min-w-0 rounded-lg border border-[#f2f4f7] bg-white p-5 xl:col-span-2"
-        aria-labelledby="status-bars-title"
-      >
-        <h2 id="status-bars-title" className="text-lg font-semibold">
-          Status Exposure
-        </h2>
-        <p className="text-sm text-[#929eae]">
-          Value comparison for paid revenue and pending payments
-        </p>
-        <ChartFrame height={220}>
-          {hasStatusData ? (
-            <ResponsiveContainer
-              width="100%"
-              height={220}
-              minWidth={0}
-              minHeight={180}
-            >
-              <BarChart data={statusSummary} margin={{ left: 0, right: 8 }}>
-                <CartesianGrid
-                  stroke="#f3f5f8"
-                  strokeDasharray="0"
-                  vertical={false}
-                />
-                <XAxis
-                  dataKey="status"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "#929eae", fontSize: 12 }}
-                />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "#929eae", fontSize: 12 }}
-                  tickFormatter={formatAxisAmount}
-                  width={42}
-                />
-                <Tooltip
-                  formatter={(value) => formatNaira(Number(value))}
-                  contentStyle={{
-                    border: "1px solid #f2f4f7",
-                    borderRadius: 8,
-                    boxShadow: "0 16px 40px rgba(27, 33, 45, 0.08)",
-                    textTransform: "capitalize",
-                  }}
-                />
-                <Bar dataKey="total" radius={[8, 8, 0, 0]} name="Total">
-                  {statusSummary.map((entry) => (
-                    <Cell
-                      key={entry.status}
-                      fill={statusColors[entry.status]}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-            <EmptyChartState label="Status exposure appears after the first invoice is saved." />
-          )}
-        </ChartFrame>
       </section>
     </div>
   );

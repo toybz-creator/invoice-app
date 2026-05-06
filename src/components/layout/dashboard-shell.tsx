@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { DashboardNav } from "@/components/layout/dashboard-nav";
+import { RealtimeStatusIndicator } from "@/components/layout/realtime-status-indicator";
 
 type DashboardShellProps = {
   user: {
@@ -37,6 +38,10 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
       <main className="w-full px-5 py-6 sm:px-8 lg:ml-[250px] lg:w-[calc(100%-250px)] lg:px-10 lg:pt-[98px]">
         {children}
       </main>
+
+      <div className="fixed bottom-6 right-6 z-50">
+        <RealtimeStatusIndicator announce={false} />
+      </div>
     </div>
   );
 }

@@ -7,11 +7,9 @@ import {
 } from "lucide-react";
 
 import { DashboardCharts } from "@/features/dashboard/components/dashboard-charts";
-import { DashboardDueInsightList } from "@/features/dashboard/components/dashboard-due-insights";
 import { DashboardErrorState } from "@/features/dashboard/components/dashboard-error-state";
 import { DashboardMetricCard } from "@/features/dashboard/components/dashboard-metric-card";
 import { DashboardRecentInvoices } from "@/features/dashboard/components/dashboard-recent-invoices";
-import { buildDashboardDueInsights } from "@/features/dashboard/lib/insights";
 import { useInvoiceSnapshot } from "@/features/invoices/components/invoice-data-provider";
 import {
   aggregateDashboardMetrics,
@@ -30,7 +28,6 @@ export function DashboardWorkspace() {
   const metrics = aggregateDashboardMetrics(invoices);
   const statusSummary = buildStatusSummary(invoices);
   const monthlySummary = buildMonthlySummary(invoices);
-  const dueInsights = buildDashboardDueInsights(invoices);
 
   return (
     <div className="space-y-8 pb-8">
@@ -70,19 +67,6 @@ export function DashboardWorkspace() {
         statusSummary={statusSummary}
         monthlySummary={monthlySummary}
       />
-
-      <div className="grid gap-5 xl:grid-cols-2">
-        <DashboardDueInsightList
-          title="Overdue invoices"
-          invoices={dueInsights.overdue}
-          tone="danger"
-        />
-        <DashboardDueInsightList
-          title="Due soon"
-          invoices={dueInsights.dueSoon}
-          tone="warning"
-        />
-      </div>
 
       <DashboardRecentInvoices invoices={invoices} />
     </div>

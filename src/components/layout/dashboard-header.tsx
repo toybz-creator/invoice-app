@@ -55,7 +55,6 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
           <h1 className="text-[28px] font-semibold tracking-normal text-[#1b212d]">
             {pageTitle}
           </h1>
-          <RealtimeStatusIndicator />
         </div>
 
         <div className="pointer-events-auto flex items-center gap-5 sm:gap-8">
@@ -92,7 +91,6 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
         <h1 className="text-[25px] font-semibold tracking-normal text-[#1b212d]">
           {pageTitle}
         </h1>
-        <RealtimeStatusIndicator announce={false} />
       </div>
       <nav
         aria-label="Mobile navigation"
