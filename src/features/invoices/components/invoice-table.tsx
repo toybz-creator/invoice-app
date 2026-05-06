@@ -1,8 +1,18 @@
 "use client";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTransition } from "react";
+import { toast } from "sonner";
 
+import {
+  deleteInvoiceAction,
+  updateInvoiceStatusAction,
+} from "@/app/actions/invoice.actions";
 import { Button } from "@/components/ui/button";
+import { DeleteInvoiceDialog } from "@/features/invoices/components/delete-invoice-dialog";
+import { useInvoiceSnapshot } from "@/features/invoices/components/invoice-data-provider";
+import { InvoiceDetailModal } from "@/features/invoices/components/invoice-detail-modal";
+import { InvoiceFormModal } from "@/features/invoices/components/invoice-form-modal";
 import { InvoiceClientCell } from "@/features/invoices/components/invoice-client-cell";
 import { InvoiceTableActions } from "@/features/invoices/components/invoice-table-actions";
 import { StatusBadge } from "@/features/invoices/components/status-badge";
@@ -13,41 +23,14 @@ import {
 import { getOrderType } from "@/features/invoices/lib/display";
 import { formatNaira } from "@/features/invoices/lib/finance";
 import { cn } from "@/lib/utils";
+import { useInvoiceUiStore } from "@/stores/invoice-ui.store";
 import type { Invoice } from "@/types/invoice";
-
-type InvoiceTableActionMode =
-  | {
-      type: "interactive";
-      activeInvoiceId: string | null;
-      isPending: boolean;
-      onToggleMenu: (invoiceId: string) => void;
-      onView: (invoiceId: string) => void;
-      onEdit: (invoiceId: string) => void;
-      onStatus: (invoice: Invoice) => void;
-      onDelete: (invoiceId: string) => void;
-    }
-  | {
-      type: "link";
-      href?: string;
-      onView?: (invoiceId: string) => void;
-    };
-
-type InvoiceTablePagination = {
-  showingStart: number;
-  showingEnd: number;
-  total: number;
-  page: number;
-  totalPages: number;
-  onPrevious: () => void;
-  onNext: () => void;
-};
 
 type InvoiceTableProps = {
   invoices: Invoice[];
   emptyTitle: string;
   emptyDescription: string;
-  actionMode: InvoiceTableActionMode;
-  pagination?: InvoiceTablePagination;
+  showPagination?: boolean;
 };
 
 function dueToneClass(tone: ReturnType<typeof getDueDateState>["tone"]) {
@@ -59,56 +42,30 @@ function dueToneClass(tone: ReturnType<typeof getDueDateState>["tone"]) {
   );
 }
 
-function InvoiceTableActionCell({
-  invoice,
-  actionMode,
-}: {
-  invoice: Invoice;
-  actionMode: InvoiceTableActionMode;
-}) {
-  if (actionMode.type === "link") {
-    return (
-      <InvoiceTableActions
-        mode="link"
-        invoice={invoice}
-        href={actionMode.href}
-      />
-    );
-  }
-
-  return (
-    <InvoiceTableActions
-      mode="interactive"
-      invoice={invoice}
-      isMenuOpen={actionMode.activeInvoiceId === invoice.id}
-      isPending={actionMode.isPending}
-      onToggleMenu={() => actionMode.onToggleMenu(invoice.id)}
-      onView={() => actionMode.onView(invoice.id)}
-      onEdit={() => actionMode.onEdit(invoice.id)}
-      onStatus={() => actionMode.onStatus(invoice)}
-      onDelete={() => actionMode.onDelete(invoice.id)}
-    />
-  );
-}
-
 function InvoiceDesktopRow({
   invoice,
-  actionMode,
+  activeInvoiceId,
+  isPending,
+  onToggleMenu,
+  onView,
+  onEdit,
+  onStatus,
+  onDelete,
 }: {
   invoice: Invoice;
-  actionMode: InvoiceTableActionMode;
+  activeInvoiceId: string | null;
+  isPending: boolean;
+  onToggleMenu: (invoiceId: string) => void;
+  onView: (invoiceId: string) => void;
+  onEdit: (invoiceId: string) => void;
+  onStatus: (invoice: Invoice) => void;
+  onDelete: (invoiceId: string) => void;
 }) {
   const dueState = getDueDateState(invoice.dueDate, invoice.status);
-  const onOpen =
-    actionMode.type === "interactive"
-      ? () => actionMode.onView(invoice.id)
-      : actionMode.onView
-        ? () => actionMode.onView?.(invoice.id)
-        : undefined;
 
   return (
     <li className="grid min-h-[78px] grid-cols-[minmax(230px,1.5fr)_minmax(140px,1fr)_minmax(130px,0.9fr)_minmax(130px,0.8fr)_minmax(130px,0.8fr)_90px] items-center gap-[30px] text-sm text-[#1b212d]">
-      <InvoiceClientCell invoice={invoice} onOpen={onOpen} />
+      <InvoiceClientCell invoice={invoice} onOpen={() => onView(invoice.id)} />
 
       <div>
         <p className="text-sm font-medium text-[#1b212d]">
@@ -129,33 +86,59 @@ function InvoiceDesktopRow({
 
       <StatusBadge status={invoice.status} />
 
-      <InvoiceTableActionCell invoice={invoice} actionMode={actionMode} />
+      <InvoiceTableActions
+        mode="interactive"
+        invoice={invoice}
+        isMenuOpen={activeInvoiceId === invoice.id}
+        isPending={isPending}
+        onToggleMenu={() => onToggleMenu(invoice.id)}
+        onView={() => onView(invoice.id)}
+        onEdit={() => onEdit(invoice.id)}
+        onStatus={() => onStatus(invoice)}
+        onDelete={() => onDelete(invoice.id)}
+      />
     </li>
   );
 }
 
 function InvoiceMobileCard({
   invoice,
-  actionMode,
+  activeInvoiceId,
+  isPending,
+  onToggleMenu,
+  onView,
+  onEdit,
+  onStatus,
+  onDelete,
 }: {
   invoice: Invoice;
-  actionMode: InvoiceTableActionMode;
+  activeInvoiceId: string | null;
+  isPending: boolean;
+  onToggleMenu: (invoiceId: string) => void;
+  onView: (invoiceId: string) => void;
+  onEdit: (invoiceId: string) => void;
+  onStatus: (invoice: Invoice) => void;
+  onDelete: (invoiceId: string) => void;
 }) {
   const dueState = getDueDateState(invoice.dueDate, invoice.status);
-  const onOpen =
-    actionMode.type === "interactive"
-      ? () => actionMode.onView(invoice.id)
-      : actionMode.onView
-        ? () => actionMode.onView?.(invoice.id)
-        : undefined;
 
   return (
     <li className="rounded-[15px] border border-[#f5f5f5] bg-white p-4">
       <div className="flex items-start justify-between gap-3">
-        <InvoiceClientCell invoice={invoice} onOpen={onOpen} />
+        <InvoiceClientCell invoice={invoice} onOpen={() => onView(invoice.id)} />
 
         <div className="shrink-0">
-          <InvoiceTableActionCell invoice={invoice} actionMode={actionMode} />
+          <InvoiceTableActions
+            mode="interactive"
+            invoice={invoice}
+            isMenuOpen={activeInvoiceId === invoice.id}
+            isPending={isPending}
+            onToggleMenu={() => onToggleMenu(invoice.id)}
+            onView={() => onView(invoice.id)}
+            onEdit={() => onEdit(invoice.id)}
+            onStatus={() => onStatus(invoice)}
+            onDelete={() => onDelete(invoice.id)}
+          />
         </div>
       </div>
 
@@ -194,37 +177,48 @@ function InvoiceMobileCard({
 }
 
 function InvoiceTablePagination({
-  pagination,
+  showingStart,
+  showingEnd,
+  total,
+  page,
+  totalPages,
+  onPrevious,
+  onNext,
 }: {
-  pagination: InvoiceTablePagination;
+  showingStart: number;
+  showingEnd: number;
+  total: number;
+  page: number;
+  totalPages: number;
+  onPrevious: () => void;
+  onNext: () => void;
 }) {
   return (
     <div className="mt-6 flex flex-col gap-3 border-t border-[#f5f5f5] pt-5 text-sm text-[#929eae] md:flex-row md:items-center md:justify-between">
       <p>
-        Showing {pagination.showingStart}-{pagination.showingEnd} of{" "}
-        {pagination.total} invoices
+        Showing {showingStart}-{showingEnd} of {total} invoices
       </p>
       <div className="flex items-center gap-2">
         <Button
           type="button"
           variant="outline"
           size="sm"
-          disabled={pagination.page <= 1}
-          onClick={pagination.onPrevious}
+          disabled={page <= 1}
+          onClick={onPrevious}
           className="rounded-[10px] border-[#f5f5f5]"
         >
           <ChevronLeft />
           Previous
         </Button>
         <span className="rounded-[10px] bg-[#fafafa] px-3 py-2 text-[#1b212d]">
-          Page {pagination.page} of {pagination.totalPages}
+          Page {page} of {totalPages}
         </span>
         <Button
           type="button"
           variant="outline"
           size="sm"
-          disabled={pagination.page >= pagination.totalPages}
-          onClick={pagination.onNext}
+          disabled={page >= totalPages}
+          onClick={onNext}
           className="rounded-[10px] border-[#f5f5f5]"
         >
           Next
@@ -239,9 +233,100 @@ export function InvoiceTable({
   invoices,
   emptyTitle,
   emptyDescription,
-  actionMode,
-  pagination,
+  showPagination = false,
 }: InvoiceTableProps) {
+  const [isPending, startTransition] = useTransition();
+  const {
+    invoices: allInvoices,
+    upsertInvoice,
+    removeInvoice,
+  } = useInvoiceSnapshot();
+
+  const page = useInvoiceUiStore((state) => state.page);
+  const pageSize = useInvoiceUiStore((state) => state.pageSize);
+  const viewingInvoiceId = useInvoiceUiStore((state) => state.viewingInvoiceId);
+  const editingInvoiceId = useInvoiceUiStore((state) => state.editingInvoiceId);
+  const deletingInvoiceId = useInvoiceUiStore(
+    (state) => state.deletingInvoiceId,
+  );
+  const actionMenuInvoiceId = useInvoiceUiStore(
+    (state) => state.actionMenuInvoiceId,
+  );
+
+  const setPage = useInvoiceUiStore((state) => state.setPage);
+  const openView = useInvoiceUiStore((state) => state.openView);
+  const closeView = useInvoiceUiStore((state) => state.closeView);
+  const openEdit = useInvoiceUiStore((state) => state.openEdit);
+  const closeEdit = useInvoiceUiStore((state) => state.closeEdit);
+  const openDelete = useInvoiceUiStore((state) => state.openDelete);
+   const closeDelete = useInvoiceUiStore((state) => state.closeDelete);
+   const toggleActionMenu = useInvoiceUiStore((state) => state.toggleActionMenu);
+   const closeActionMenu = useInvoiceUiStore((state) => state.closeActionMenu);
+ 
+   const createOpen = useInvoiceUiStore((state) => state.createOpen);
+   const closeCreate = useInvoiceUiStore((state) => state.closeCreate);
+ 
+   const viewingInvoice = allInvoices.find(
+     (invoice) => invoice.id === viewingInvoiceId,
+   );
+  const editingInvoice = allInvoices.find(
+    (invoice) => invoice.id === editingInvoiceId,
+  );
+  const deletingInvoice = allInvoices.find(
+    (invoice) => invoice.id === deletingInvoiceId,
+  );
+
+  // Pagination logic
+  const totalPages = Math.max(1, Math.ceil(invoices.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const pageStart = (safePage - 1) * pageSize;
+
+  const paginatedInvoices = showPagination
+    ? invoices.slice(pageStart, pageStart + pageSize)
+    : invoices;
+
+  const showingStart = invoices.length === 0 ? 0 : pageStart + 1;
+  const showingEnd = Math.min(pageStart + pageSize, invoices.length);
+
+  function updateStatus(invoice: Invoice) {
+    const nextStatus = invoice.status === "paid" ? "unpaid" : "paid";
+
+    startTransition(async () => {
+      const result = await updateInvoiceStatusAction({
+        id: invoice.id,
+        status: nextStatus,
+      });
+
+      if (!result.ok) {
+        toast.error(result.error);
+        return;
+      }
+
+      toast.success(result.message);
+      upsertInvoice(result.data);
+      closeActionMenu();
+    });
+  }
+
+  function deleteInvoice() {
+    if (!deletingInvoice) {
+      return;
+    }
+
+    startTransition(async () => {
+      const result = await deleteInvoiceAction({ id: deletingInvoice.id });
+
+      if (!result.ok) {
+        toast.error(result.error);
+        return;
+      }
+
+      toast.success(result.message);
+      removeInvoice(result.data.id);
+      closeDelete();
+    });
+  }
+
   if (invoices.length === 0) {
     return (
       <div className="rounded-[15px] border border-[#f5f5f5] px-5 py-16 text-center">
@@ -264,27 +349,76 @@ export function InvoiceTable({
         </div>
 
         <ul className="divide-y divide-[#f5f5f5]">
-          {invoices.map((invoice) => (
+          {paginatedInvoices.map((invoice) => (
             <InvoiceDesktopRow
               key={invoice.id}
               invoice={invoice}
-              actionMode={actionMode}
+              activeInvoiceId={actionMenuInvoiceId}
+              isPending={isPending}
+              onToggleMenu={toggleActionMenu}
+              onView={openView}
+              onEdit={openEdit}
+              onStatus={updateStatus}
+              onDelete={openDelete}
             />
           ))}
         </ul>
       </div>
 
       <ul className="space-y-3 lg:hidden">
-        {invoices.map((invoice) => (
+        {paginatedInvoices.map((invoice) => (
           <InvoiceMobileCard
             key={invoice.id}
             invoice={invoice}
-            actionMode={actionMode}
+            activeInvoiceId={actionMenuInvoiceId}
+            isPending={isPending}
+            onToggleMenu={toggleActionMenu}
+            onView={openView}
+            onEdit={openEdit}
+            onStatus={updateStatus}
+            onDelete={openDelete}
           />
         ))}
       </ul>
 
-      {pagination ? <InvoiceTablePagination pagination={pagination} /> : null}
+      {showPagination ? (
+         <InvoiceTablePagination
+           showingStart={showingStart}
+           showingEnd={showingEnd}
+           total={invoices.length}
+           page={safePage}
+           totalPages={totalPages}
+           onPrevious={() => setPage(safePage - 1)}
+           onNext={() => setPage(safePage + 1)}
+         />
+       ) : null}
+ 
+       {createOpen ? <InvoiceFormModal onClose={closeCreate} /> : null}
+ 
+       {editingInvoice ? (
+         <InvoiceFormModal invoice={editingInvoice} onClose={closeEdit} />
+       ) : null}
+
+      {viewingInvoice ? (
+        <InvoiceDetailModal
+          invoice={viewingInvoice}
+          onClose={closeView}
+          onEdit={() => {
+            closeView();
+            openEdit(viewingInvoice.id);
+          }}
+        />
+      ) : null}
+
+      {deletingInvoice ? (
+        <DeleteInvoiceDialog
+          invoice={deletingInvoice}
+          isPending={isPending}
+          onCancel={closeDelete}
+          onConfirm={deleteInvoice}
+        />
+      ) : null}
     </>
   );
 }
+

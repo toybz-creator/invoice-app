@@ -23,7 +23,6 @@ export function DashboardRecentInvoices({ invoices }: { invoices: Invoice[] }) {
           invoices={invoices.slice(0, 4)}
           emptyTitle="No recent invoices"
           emptyDescription="Create your first invoice to populate dashboard activity."
-          actionMode={{ type: "link", href: "/invoices" }}
         />
       </div>
     </section>
