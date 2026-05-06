@@ -42,7 +42,7 @@ Done when:
 
 - App runs locally.
 - TypeScript strict mode is enabled.
-- Basic home, login, signup, and dashboard routes exist.
+- Basic login, signup, and root dashboard routes exist.
 
 ### TASK-002: Configure Code Quality Tooling
 

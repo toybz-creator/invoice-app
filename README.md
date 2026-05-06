@@ -9,7 +9,7 @@ Phase 1 through Phase 7 are implemented:
 
 - Next.js App Router with TypeScript strict mode and `src/`.
 - TailwindCSS v4 and ShadCN/UI initialized.
-- Public `/`, auth `/login` and `/signup`, and protected `/dashboard` and
+- Public auth `/login` and `/signup`, and protected root `/` (Dashboard) and
   `/invoices` route groups.
 - Auth and dashboard route groups with shared layout components.
 - Feature and shared module folders for auth, dashboard, invoices, Appwrite,

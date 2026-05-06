@@ -3,12 +3,13 @@ import { NextResponse } from "next/server";
 
 import { getSessionCookieName } from "@/lib/appwrite/session-cookie";
 
-const protectedRoutes = ["/dashboard", "/invoices"];
+const protectedRoutes = ["/", "/invoices"];
 const authRoutes = ["/forgot-password", "/login", "/signup"];
 
 function isRouteMatch(pathname: string, routes: string[]) {
   return routes.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`),
+    (route) =>
+      pathname === route || (route !== "/" && pathname.startsWith(`${route}/`)),
   );
 }
 
@@ -29,7 +30,7 @@ export function proxy(request: NextRequest) {
 
   if (isRouteMatch(pathname, authRoutes) && hasSession) {
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.pathname = "/";
     url.search = "";
     return NextResponse.redirect(url);
   }
@@ -38,5 +39,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/invoices/:path*", "/login", "/signup"],
+  matcher: ["/", "/invoices/:path*", "/login", "/signup"],
 };

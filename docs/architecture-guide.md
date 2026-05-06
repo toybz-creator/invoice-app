@@ -27,7 +27,7 @@ Next.js UI instead of creating unrelated layouts.
 
 Screen mapping:
 
-- `/dashboard`: `docs/ui-design/Dashboard.png`
+- `/`: `docs/ui-design/Dashboard.png`
 - `/invoices`: `docs/ui-design/Invoices.png`
 - Invoice detail / create-edit surface: `docs/ui-design/invoice.png`
 
@@ -63,14 +63,14 @@ src/
       login/
       signup/
     (dashboard)/
-      dashboard/
       invoices/
+      layout.tsx
+      loading.tsx
+      page.tsx
     actions/
       auth.actions.ts
       invoice.actions.ts
     layout.tsx
-    page.tsx
-    middleware.ts
   components/
     layout/
     ui/

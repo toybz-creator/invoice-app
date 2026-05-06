@@ -17,7 +17,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
   return (
     <div className="min-h-dvh bg-white text-[#1b212d]">
       <aside className="fixed inset-y-0 left-0 hidden w-[250px] flex-col bg-[#fafafa] px-[25px] py-[30px] lg:flex">
-        <Link href="/dashboard" className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3">
           <Image
             src="/figma/maglo-exclude.svg"
             alt=""

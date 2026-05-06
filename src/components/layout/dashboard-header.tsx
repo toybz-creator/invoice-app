@@ -15,7 +15,7 @@ type DashboardHeaderProps = {
 };
 
 const mobileNavItems = [
-  { href: "/dashboard", label: "Dashboard" },
+  { href: "/", label: "Dashboard" },
   { href: "/invoices", label: "Invoices" },
 ];
 
@@ -37,9 +37,9 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
   const pageTitle = getPageTitle(pathname);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-[#f5f5f5] bg-white/95 backdrop-blur lg:pointer-events-none lg:fixed lg:left-[250px] lg:right-0 lg:top-0 lg:border-b-0 lg:bg-transparent lg:backdrop-blur-0">
+    <header className="sticky top-0 z-30 border-b border-[#f5f5f5] bg-white lg:pointer-events-none lg:fixed lg:left-[250px] lg:right-0 lg:top-0 lg:border-b-0">
       <div className="flex h-[84px] items-center justify-between px-5 sm:px-8 lg:px-10">
-        <Link href="/dashboard" className="flex items-center gap-3 lg:hidden">
+        <Link href="/" className="flex items-center gap-3 lg:hidden">
           <Image
             src="/figma/maglo-exclude.svg"
             alt=""

@@ -47,7 +47,7 @@ export function SignupForm() {
       }
 
       toast.success(result.message);
-      router.replace("/dashboard");
+      router.replace("/");
       router.refresh();
     });
   }

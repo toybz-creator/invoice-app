@@ -1,15 +1,21 @@
 "use client";
 
-import { FileText, LayoutDashboard, LogOut } from "lucide-react";
+import {
+  BookMarked,
+  Home,
+  LogOut,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { logoutAction } from "@/app/actions/auth.actions";
 
-const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/invoices", label: "Invoices", icon: FileText },
+const primaryNavItems = [
+  { href: "/", label: "Dashboard", icon: Home },
+  { href: "/invoices", label: "Invoices", icon: BookMarked },
 ];
+
+const secondaryNavItems: Array<{ href: string; label: string; icon: any }> = [];
 
 export function DashboardNav() {
   const pathname = usePathname();
@@ -17,11 +23,11 @@ export function DashboardNav() {
   return (
     <div className="mt-10 flex flex-1 flex-col justify-between">
       <nav aria-label="Primary navigation" className="space-y-0.5">
-        {navItems.map((item) => {
+        {primaryNavItems.map((item) => {
           const Icon = item.icon;
           const isActive =
-            item.href === "/dashboard"
-              ? pathname === "/dashboard" && item.label === "Dashboard"
+            item.href === "/"
+              ? pathname === "/"
               : pathname.startsWith(item.href);
 
           return (
@@ -43,6 +49,19 @@ export function DashboardNav() {
       </nav>
 
       <nav aria-label="Account navigation" className="space-y-0.5">
+        {secondaryNavItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Link
+              key={`${item.label}-${item.href}`}
+              href={item.href}
+              className="flex h-[48px] w-[200px] items-center gap-3 rounded-lg px-[15px] text-sm font-medium text-[#929eae] transition hover:bg-white hover:text-[#1b212d]"
+            >
+              <Icon className="size-5" />
+              {item.label}
+            </Link>
+          );
+        })}
         <form action={logoutAction}>
           <button
             type="submit"

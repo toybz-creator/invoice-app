@@ -1,11 +1,9 @@
 "use client";
 
 import {
-  CalendarClock,
-  FileText,
+  BookMarked,
   Receipt,
-  WalletCards,
-  WalletMinimal,
+  Wallet,
 } from "lucide-react";
 
 import { DashboardCharts } from "@/features/dashboard/components/dashboard-charts";
@@ -40,18 +38,18 @@ export function DashboardWorkspace() {
         <DashboardMetricCard
           label="Total invoice"
           value={String(metrics.totalInvoices)}
-          icon={<WalletMinimal className="size-5" />}
+          icon={<Wallet className="size-5" />}
           featured
         />
         <DashboardMetricCard
           label="Amount Paid"
           value={formatNaira(metrics.paidRevenue)}
-          icon={<WalletCards className="size-5" />}
+          icon={<Wallet className="size-5" />}
         />
         <DashboardMetricCard
           label="Pending Payment"
           value={formatNaira(metrics.pendingPayments)}
-          icon={<CalendarClock className="size-5" />}
+          icon={<Wallet className="size-5" />}
         />
       </div>
 
@@ -64,7 +62,7 @@ export function DashboardWorkspace() {
         <DashboardMetricCard
           label="Monthly Payable VAT"
           value={formatNaira(metrics.payableVatThisMonth)}
-          icon={<FileText className="size-5" />}
+          icon={<BookMarked className="size-5" />}
         />
       </div>
 
