@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { InvoicesWorkspace } from "@/features/invoices/components/invoices-workspace";
-import { listInvoiceDocumentsByUser } from "@/lib/appwrite/database";
+import { listInvoiceRowsByUser } from "@/lib/appwrite/database";
 import { getAuthenticatedUser } from "@/lib/appwrite/session";
 
 export const metadata = {
@@ -18,7 +18,7 @@ export default async function InvoicesPage() {
     redirect("/login");
   }
 
-  const result = await listInvoiceDocumentsByUser(user.$id, { limit: 100 });
+  const result = await listInvoiceRowsByUser(user.$id, { limit: 100 });
 
   if (!result.ok) {
     return (

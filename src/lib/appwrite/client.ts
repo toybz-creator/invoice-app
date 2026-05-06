@@ -1,4 +1,4 @@
-import { Account, Client, Databases } from "appwrite";
+import { Account, Client, TablesDB } from "appwrite";
 
 import { getPublicAppwriteConfig } from "@/lib/appwrite/config";
 
@@ -19,6 +19,6 @@ export function getBrowserAccount() {
   return new Account(getBrowserAppwriteClient());
 }
 
-export function getBrowserDatabases() {
-  return new Databases(getBrowserAppwriteClient());
+export function getBrowserTablesDB() {
+  return new TablesDB(getBrowserAppwriteClient());
 }

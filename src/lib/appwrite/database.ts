@@ -1,15 +1,15 @@
 import { ID, Query } from "node-appwrite";
 
-import { createAdminDatabases } from "@/lib/appwrite/admin";
+import { createAdminTablesDB } from "@/lib/appwrite/admin";
 import { getServerAppwriteConfig } from "@/lib/appwrite/config";
 import { toAppwriteError } from "@/lib/appwrite/errors";
-import { invoiceDocumentPermissions } from "@/lib/appwrite/permissions";
+import { invoiceRowPermissions } from "@/lib/appwrite/permissions";
 import { withAppwriteRetry } from "@/lib/appwrite/retry";
 import type {
-  AppwriteInvoiceDocument,
+  AppwriteInvoiceRow,
   Invoice,
-  InvoiceDocumentData,
   InvoiceList,
+  InvoiceRowData,
   InvoiceStatus,
 } from "@/types/invoice";
 import type { AppResult } from "@/types/result";
@@ -20,46 +20,44 @@ type ListInvoicesOptions = {
   status?: InvoiceStatus;
 };
 
-export type CreateInvoiceDocumentInput = InvoiceDocumentData;
+export type CreateInvoiceRowInput = InvoiceRowData;
 
-export type UpdateInvoiceDocumentInput = Partial<
-  Omit<InvoiceDocumentData, "userId">
->;
+export type UpdateInvoiceRowInput = Partial<Omit<InvoiceRowData, "userId">>;
 
-function mapInvoiceDocument(document: AppwriteInvoiceDocument): Invoice {
+function mapInvoiceRow(row: AppwriteInvoiceRow): Invoice {
   return {
-    id: document.$id,
-    userId: document.userId,
-    clientName: document.clientName,
-    clientEmail: document.clientEmail,
-    amount: document.amount,
-    vatRate: document.vatRate,
-    vatAmount: document.vatAmount,
-    total: document.total,
-    dueDate: document.dueDate,
-    status: document.status,
-    $createdAt: document.$createdAt,
-    $updatedAt: document.$updatedAt,
-    paidAt: document.paidAt,
+    id: row.$id,
+    userId: row.userId,
+    clientName: row.clientName,
+    clientEmail: row.clientEmail,
+    amount: row.amount,
+    vatRate: row.vatRate,
+    vatAmount: row.vatAmount,
+    total: row.total,
+    dueDate: row.dueDate,
+    status: row.status,
+    $createdAt: row.$createdAt,
+    $updatedAt: row.$updatedAt,
+    paidAt: row.paidAt,
   };
 }
 
-function getInvoiceCollectionConfig() {
+function getInvoiceTableConfig() {
   const config = getServerAppwriteConfig();
 
   return {
     databaseId: config.databaseId,
-    collectionId: config.invoicesCollectionId,
+    tableId: config.invoicesTableId,
   };
 }
 
-export async function listInvoiceDocumentsByUser(
+export async function listInvoiceRowsByUser(
   userId: string,
   options: ListInvoicesOptions = {},
 ): Promise<AppResult<InvoiceList>> {
   try {
-    const databases = createAdminDatabases();
-    const collectionConfig = getInvoiceCollectionConfig();
+    const tablesDB = createAdminTablesDB();
+    const tableConfig = getInvoiceTableConfig();
     const queries = [
       Query.equal("userId", userId),
       Query.limit(options.limit ?? 50),
@@ -75,22 +73,22 @@ export async function listInvoiceDocumentsByUser(
 
     const response = await withAppwriteRetry(
       () =>
-        databases.listDocuments<AppwriteInvoiceDocument>({
-          ...collectionConfig,
+        tablesDB.listRows<AppwriteInvoiceRow>({
+          ...tableConfig,
           queries,
           total: true,
         }),
       {
         context: { userId, status: options.status },
-        label: "List invoice documents",
+        label: "List invoice rows",
       },
     );
 
     return {
       ok: true,
       data: {
-        invoices: response.documents
-          .map(mapInvoiceDocument)
+        invoices: response.rows
+          .map(mapInvoiceRow)
           .sort(
             (first, second) =>
               new Date(second.$createdAt).getTime() -
@@ -104,105 +102,105 @@ export async function listInvoiceDocumentsByUser(
   }
 }
 
-export async function getInvoiceDocumentForUser(
+export async function getInvoiceRowForUser(
   invoiceId: string,
   userId: string,
 ): Promise<AppResult<Invoice>> {
   try {
-    const databases = createAdminDatabases();
-    const document = await withAppwriteRetry(
+    const tablesDB = createAdminTablesDB();
+    const row = await withAppwriteRetry(
       () =>
-        databases.getDocument<AppwriteInvoiceDocument>({
-          ...getInvoiceCollectionConfig(),
-          documentId: invoiceId,
+        tablesDB.getRow<AppwriteInvoiceRow>({
+          ...getInvoiceTableConfig(),
+          rowId: invoiceId,
         }),
-      { context: { invoiceId, userId }, label: "Get invoice document" },
+      { context: { invoiceId, userId }, label: "Get invoice row" },
     );
 
-    if (document.userId !== userId) {
+    if (row.userId !== userId) {
       return { ok: false, error: "Invoice not found.", status: 404 };
     }
 
-    return { ok: true, data: mapInvoiceDocument(document) };
+    return { ok: true, data: mapInvoiceRow(row) };
   } catch (error) {
     return toAppwriteError(error);
   }
 }
 
-export async function createInvoiceDocument(
-  input: CreateInvoiceDocumentInput,
+export async function createInvoiceRow(
+  input: CreateInvoiceRowInput,
 ): Promise<AppResult<Invoice>> {
   try {
-    const databases = createAdminDatabases();
-    const document = await withAppwriteRetry(
+    const tablesDB = createAdminTablesDB();
+    const row = await withAppwriteRetry(
       () =>
-        databases.createDocument<AppwriteInvoiceDocument>({
-          ...getInvoiceCollectionConfig(),
-          documentId: ID.unique(),
+        tablesDB.createRow<AppwriteInvoiceRow>({
+          ...getInvoiceTableConfig(),
+          rowId: ID.unique(),
           data: input,
-          permissions: invoiceDocumentPermissions(input.userId),
+          permissions: invoiceRowPermissions(input.userId),
         }),
       {
         context: { userId: input.userId, status: input.status },
-        label: "Create invoice document",
+        label: "Create invoice row",
       },
     );
 
-    return { ok: true, data: mapInvoiceDocument(document) };
+    return { ok: true, data: mapInvoiceRow(row) };
   } catch (error) {
     return toAppwriteError(error);
   }
 }
 
-export async function updateInvoiceDocumentForUser(
+export async function updateInvoiceRowForUser(
   invoiceId: string,
   userId: string,
-  input: UpdateInvoiceDocumentInput,
+  input: UpdateInvoiceRowInput,
 ): Promise<AppResult<Invoice>> {
-  const existing = await getInvoiceDocumentForUser(invoiceId, userId);
+  const existing = await getInvoiceRowForUser(invoiceId, userId);
 
   if (!existing.ok) {
     return existing;
   }
 
   try {
-    const databases = createAdminDatabases();
-    const document = await withAppwriteRetry(
+    const tablesDB = createAdminTablesDB();
+    const row = await withAppwriteRetry(
       () =>
-        databases.updateDocument<AppwriteInvoiceDocument>({
-          ...getInvoiceCollectionConfig(),
-          documentId: invoiceId,
+        tablesDB.updateRow<AppwriteInvoiceRow>({
+          ...getInvoiceTableConfig(),
+          rowId: invoiceId,
           data: input,
-          permissions: invoiceDocumentPermissions(userId),
+          permissions: invoiceRowPermissions(userId),
         }),
-      { context: { invoiceId, userId }, label: "Update invoice document" },
+      { context: { invoiceId, userId }, label: "Update invoice row" },
     );
 
-    return { ok: true, data: mapInvoiceDocument(document) };
+    return { ok: true, data: mapInvoiceRow(row) };
   } catch (error) {
     return toAppwriteError(error);
   }
 }
 
-export async function deleteInvoiceDocumentForUser(
+export async function deleteInvoiceRowForUser(
   invoiceId: string,
   userId: string,
 ): Promise<AppResult<{ id: string }>> {
-  const existing = await getInvoiceDocumentForUser(invoiceId, userId);
+  const existing = await getInvoiceRowForUser(invoiceId, userId);
 
   if (!existing.ok) {
     return existing;
   }
 
   try {
-    const databases = createAdminDatabases();
+    const tablesDB = createAdminTablesDB();
     await withAppwriteRetry(
       () =>
-        databases.deleteDocument({
-          ...getInvoiceCollectionConfig(),
-          documentId: invoiceId,
+        tablesDB.deleteRow({
+          ...getInvoiceTableConfig(),
+          rowId: invoiceId,
         }),
-      { context: { invoiceId, userId }, label: "Delete invoice document" },
+      { context: { invoiceId, userId }, label: "Delete invoice row" },
     );
 
     return { ok: true, data: { id: invoiceId } };

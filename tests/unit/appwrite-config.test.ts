@@ -11,7 +11,7 @@ const validEnv = {
   NEXT_PUBLIC_APPWRITE_ENDPOINT: "https://cloud.appwrite.io/v1",
   NEXT_PUBLIC_APPWRITE_PROJECT_ID: "project-id",
   NEXT_PUBLIC_APPWRITE_DATABASE_ID: "database-id",
-  NEXT_PUBLIC_APPWRITE_INVOICES_COLLECTION_ID: "invoices",
+  NEXT_PUBLIC_APPWRITE_INVOICES_TABLE_ID: "invoices",
   APPWRITE_API_KEY: "server-key",
 };
 
@@ -21,7 +21,19 @@ describe("Appwrite config", () => {
       endpoint: "https://cloud.appwrite.io/v1",
       projectId: "project-id",
       databaseId: "database-id",
-      invoicesCollectionId: "invoices",
+      invoicesTableId: "invoices",
+    });
+  });
+
+  it("keeps the legacy collection env key as a compatibility fallback", () => {
+    expect(
+      parsePublicAppwriteConfig({
+        ...validEnv,
+        NEXT_PUBLIC_APPWRITE_INVOICES_TABLE_ID: undefined,
+        NEXT_PUBLIC_APPWRITE_INVOICES_COLLECTION_ID: "legacy-invoices",
+      }),
+    ).toMatchObject({
+      invoicesTableId: "legacy-invoices",
     });
   });
 

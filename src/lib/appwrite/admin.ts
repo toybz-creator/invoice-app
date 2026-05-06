@@ -1,6 +1,6 @@
 import "server-only";
 
-import { Account, Client, Databases, Users } from "node-appwrite";
+import { Account, Client, TablesDB, Users } from "node-appwrite";
 
 import { getServerAppwriteConfig } from "@/lib/appwrite/config";
 
@@ -13,8 +13,8 @@ export function createAdminAppwriteClient() {
     .setKey(config.apiKey);
 }
 
-export function createAdminDatabases() {
-  return new Databases(createAdminAppwriteClient());
+export function createAdminTablesDB() {
+  return new TablesDB(createAdminAppwriteClient());
 }
 
 export function createAdminUsers() {

@@ -5,7 +5,7 @@ TailwindCSS, and Vercel.
 
 ## Current Status
 
-Phase 1 through Phase 5 are implemented:
+Phase 1 through Phase 6 are implemented:
 
 - Next.js App Router with TypeScript strict mode and `src/`.
 - TailwindCSS v4 and ShadCN/UI initialized.
@@ -26,10 +26,10 @@ Phase 1 through Phase 5 are implemented:
 - React Hook Form and Zod auth forms translated from local Maglo reference
   imagery, with inline errors, pending states, and toast feedback.
 - Runtime validation for required Appwrite environment variables.
-- Typed invoice document helpers with owner-scoped permissions.
+- Typed invoice row helpers with owner-scoped permissions.
 - Environment-aware development error logging and retry handling around
   Appwrite session verification, reads, and mutations.
-- Reproducible Appwrite database, collection, attribute, index, and permission
+- Reproducible Appwrite database, table, column, index, and permission
   setup notes.
 - Invoice validation schemas, finance utilities, dashboard aggregation, due-date
   utilities, and Naira formatting.
@@ -40,9 +40,15 @@ Phase 1 through Phase 5 are implemented:
 - Invoice creation/edit forms, responsive invoice table, all/paid/unpaid
   Zustand UI filters, mobile invoice cards, status controls, delete
   confirmation, empty/Appwrite-load-error states, and toast feedback.
+- Dashboard metric cards translated from `docs/ui-design/Dashboard.png`,
+  including total invoices, paid revenue, pending payments, total VAT
+  collected, and monthly payable VAT from authenticated invoice rows.
+- Responsive Recharts dashboard visualizations for monthly revenue/VAT trend,
+  paid versus unpaid split, and status exposure, with typed empty states.
+- Dashboard overdue and due-soon insight panels with due-date countdown labels.
 
-Realtime subscriptions, full dashboard charts, production e2e flows, and Vercel
-deployment are still pending later phases.
+Realtime subscriptions, production e2e flows, authenticated browser visual
+verification, and Vercel deployment are still pending later phases.
 
 ## Prerequisites
 
@@ -122,7 +128,7 @@ Create `.env.local` with these values:
 NEXT_PUBLIC_APPWRITE_ENDPOINT=
 NEXT_PUBLIC_APPWRITE_PROJECT_ID=
 NEXT_PUBLIC_APPWRITE_DATABASE_ID=
-NEXT_PUBLIC_APPWRITE_INVOICES_COLLECTION_ID=
+NEXT_PUBLIC_APPWRITE_INVOICES_TABLE_ID=
 APPWRITE_API_KEY=
 APP_ENV=development
 ```
@@ -135,19 +141,24 @@ log Appwrite/auth/action failures with useful context. Use `production` in
 production so sensitive operational details are not printed to logs by default.
 Accepted values are `development`, `preview`, `production`, and `test`.
 
+`NEXT_PUBLIC_APPWRITE_INVOICES_TABLE_ID` is the preferred Appwrite TablesDB
+table ID variable. `NEXT_PUBLIC_APPWRITE_INVOICES_COLLECTION_ID` is still
+accepted as a temporary compatibility fallback for older local or Vercel
+configuration.
+
 `APPWRITE_API_KEY` must be created from the Appwrite Console with enough scope
-for server-side invoice document operations. The current server boundary uses
-`node-appwrite` only inside `src/lib/appwrite/admin.ts`, which is marked
-server-only.
+for server-side invoice row operations through TablesDB. The current server
+boundary uses `node-appwrite` only inside `src/lib/appwrite/admin.ts`, which is
+marked server-only.
 
 ## Appwrite Setup
 
 1. Create an Appwrite project and copy its endpoint and project ID.
 2. Enable Auth with the email/password provider.
 3. Create a database for this app and copy the database ID.
-4. Create an `invoices` collection, or another collection whose ID is stored in
-   `NEXT_PUBLIC_APPWRITE_INVOICES_COLLECTION_ID`.
-5. Add collection attributes:
+4. Create an `invoices` table, or another table whose ID is stored in
+   `NEXT_PUBLIC_APPWRITE_INVOICES_TABLE_ID`.
+5. Add table columns:
 
 ```text
 userId: string, required
@@ -172,13 +183,13 @@ userId_status
 userId_dueDate
 ```
 
-Do not add custom `createdAt` or `updatedAt` attributes. The application uses
-Appwrite's system `$createdAt` and `$updatedAt` document metadata and sorts
-fetched invoices in the server helper.
+Do not add custom `createdAt` or `updatedAt` columns. The application uses
+Appwrite's system `$createdAt` and `$updatedAt` row metadata and sorts fetched
+invoices in the server helper.
 
-7. Configure collection-level permissions so users cannot broadly read or write
-   all invoices. Invoice documents are created with owner-only read, update, and
-   delete permissions in `invoiceDocumentPermissions(userId)`.
+7. Configure table-level permissions so users cannot broadly read or write all
+   invoices. Invoice rows are created with owner-only read, update, and delete
+   permissions in `invoiceRowPermissions(userId)`.
 8. Create a server API key for Vercel/local server actions and store it in
    `APPWRITE_API_KEY`. Never prefix this key with `NEXT_PUBLIC_`.
 
@@ -190,8 +201,8 @@ client.ts       # browser-safe Appwrite client helpers
 admin.ts        # server-only node-appwrite admin/session clients
 session.ts      # server-only Appwrite session read/write helpers
 session-cookie.ts # edge-safe session cookie name/options
-permissions.ts  # per-user invoice document permissions
-database.ts     # typed invoice document helpers
+permissions.ts  # per-user invoice row permissions
+database.ts     # typed invoice row helpers
 ```
 
 Auth server actions store the Appwrite session secret in an HttpOnly cookie
@@ -203,6 +214,8 @@ Appwrite session when possible and clears the local cookie before redirecting to
 expiry so routine browser refreshes and direct URL visits do not force users to
 sign in again.
 
+Invoice persistence uses the current Appwrite TablesDB SDK APIs:
+`listRows()`, `getRow()`, `createRow()`, `updateRow()`, and `deleteRow()`.
 Appwrite session verification, invoice reads, and invoice mutations are wrapped
 with a small retry layer for transient network, timeout, rate-limit, and 5xx
 failures. In `APP_ENV=development`, those failures are logged with operation
@@ -236,6 +249,12 @@ action placement, mobile cards, and in-workspace load-error state into the
 responsive invoice workspace. The shared auth screen uses
 `public/auth-hero.png`, `public/maglo-mark.svg`, and
 `public/auth-underline.svg`.
+
+Phase 6 uses `docs/ui-design/Dashboard.png` for the dashboard hierarchy: sidebar
+shell, metric cards, working-capital chart area, and recent invoice activity.
+The production implementation adds the required VAT metrics, paid/unpaid chart,
+status exposure chart, empty chart states, and overdue/due-soon panels. A
+browser visual pass still requires a configured authenticated Appwrite session.
 
 Browser verification is represented by the Playwright route protection smoke
 test. End-to-end credential submission still requires configured Appwrite

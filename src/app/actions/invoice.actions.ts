@@ -10,9 +10,9 @@ import {
   updateInvoiceStatusSchema,
 } from "@/features/invoices/schemas/invoice.schema";
 import {
-  createInvoiceDocument,
-  deleteInvoiceDocumentForUser,
-  updateInvoiceDocumentForUser,
+  createInvoiceRow,
+  deleteInvoiceRowForUser,
+  updateInvoiceRowForUser,
 } from "@/lib/appwrite/database";
 import { getAuthenticatedUser } from "@/lib/appwrite/session";
 import { fieldErrorsFromIssues } from "@/lib/validation/field-errors";
@@ -73,7 +73,7 @@ export async function createInvoiceAction(
     parsed.data.vatRate,
   );
 
-  const result = await createInvoiceDocument({
+  const result = await createInvoiceRow({
     userId: user.$id,
     clientName: parsed.data.clientName,
     clientEmail: parsed.data.clientEmail,
@@ -123,7 +123,7 @@ export async function editInvoiceAction(
     parsed.data.vatRate,
   );
 
-  const result = await updateInvoiceDocumentForUser(parsed.data.id, user.$id, {
+  const result = await updateInvoiceRowForUser(parsed.data.id, user.$id, {
     clientName: parsed.data.clientName,
     clientEmail: parsed.data.clientEmail,
     dueDate: normalizeDueDate(parsed.data.dueDate),
@@ -168,7 +168,7 @@ export async function deleteInvoiceAction(
     };
   }
 
-  const result = await deleteInvoiceDocumentForUser(parsed.data.id, user.$id);
+  const result = await deleteInvoiceRowForUser(parsed.data.id, user.$id);
 
   if (!result.ok) {
     return invoiceActionError(
@@ -206,7 +206,7 @@ export async function updateInvoiceStatusAction(
     };
   }
 
-  const result = await updateInvoiceDocumentForUser(parsed.data.id, user.$id, {
+  const result = await updateInvoiceRowForUser(parsed.data.id, user.$id, {
     status: parsed.data.status,
     paidAt: parsed.data.status === "paid" ? new Date().toISOString() : null,
   });

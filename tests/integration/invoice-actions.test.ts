@@ -9,9 +9,9 @@ import {
 
 const mocks = vi.hoisted(() => ({
   getAuthenticatedUser: vi.fn(),
-  createInvoiceDocument: vi.fn(),
-  updateInvoiceDocumentForUser: vi.fn(),
-  deleteInvoiceDocumentForUser: vi.fn(),
+  createInvoiceRow: vi.fn(),
+  updateInvoiceRowForUser: vi.fn(),
+  deleteInvoiceRowForUser: vi.fn(),
 }));
 
 vi.mock("next/cache", () => ({
@@ -23,9 +23,9 @@ vi.mock("@/lib/appwrite/session", () => ({
 }));
 
 vi.mock("@/lib/appwrite/database", () => ({
-  createInvoiceDocument: mocks.createInvoiceDocument,
-  updateInvoiceDocumentForUser: mocks.updateInvoiceDocumentForUser,
-  deleteInvoiceDocumentForUser: mocks.deleteInvoiceDocumentForUser,
+  createInvoiceRow: mocks.createInvoiceRow,
+  updateInvoiceRowForUser: mocks.updateInvoiceRowForUser,
+  deleteInvoiceRowForUser: mocks.deleteInvoiceRowForUser,
 }));
 
 describe("invoice actions", () => {
@@ -46,7 +46,7 @@ describe("invoice actions", () => {
       error: expect.stringContaining("signed in"),
     });
 
-    expect(mocks.createInvoiceDocument).not.toHaveBeenCalled();
+    expect(mocks.createInvoiceRow).not.toHaveBeenCalled();
   });
 
   it("returns validation errors for invalid mutation inputs", async () => {
@@ -79,7 +79,7 @@ describe("invoice actions", () => {
       }),
     });
 
-    expect(mocks.updateInvoiceDocumentForUser).not.toHaveBeenCalled();
-    expect(mocks.deleteInvoiceDocumentForUser).not.toHaveBeenCalled();
+    expect(mocks.updateInvoiceRowForUser).not.toHaveBeenCalled();
+    expect(mocks.deleteInvoiceRowForUser).not.toHaveBeenCalled();
   });
 });

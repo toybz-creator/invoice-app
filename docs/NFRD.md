@@ -67,7 +67,7 @@ Expected module categories:
 
 - Users must only access their own invoices.
 - Server actions must validate the authenticated user before every create, update, delete, and status change.
-- Appwrite document permissions must be configured per user.
+- Appwrite row permissions must be configured per user.
 - Client-provided `userId`, totals, VAT amount, and ownership-sensitive fields must not be trusted.
 
 ### 4.3 Input Validation
@@ -79,7 +79,7 @@ Expected module categories:
 
 ### 4.4 Secrets
 
-- Appwrite endpoint, project ID, database ID, collection IDs, and server API keys must be loaded from environment variables.
+- Appwrite endpoint, project ID, database ID, table IDs, and server API keys must be loaded from environment variables.
 - Server-only keys must never be exposed through `NEXT_PUBLIC_*`.
 - Vercel environment variable setup must be documented.
 - Environment variables should be typed to avoid errors
@@ -205,7 +205,7 @@ Recommended tooling:
 - The app must deploy to Vercel.
 - Build must pass locally before deployment.
 - Environment variables must be documented for local and Vercel environments.
-- Appwrite collections, indexes, and permissions must be documented and reproducible.
+- Appwrite tables, indexes, and permissions must be documented and reproducible.
 - Deployment should include a smoke test checklist.
 
 ## 12. Maintainability Requirements
@@ -213,5 +213,5 @@ Recommended tooling:
 - `README.md` must explain installation, local development, testing, Appwrite setup, and deployment.
 - `docs/architecture-guide.md` must describe data flow, service boundaries, realtime approach, and testing approach.
 - Each major feature should be implemented in its own feature folder.
-- Appwrite collection schemas and required indexes must be documented.
+- Appwrite table schemas and required indexes must be documented.
 - Technical decisions should favor maintainability over quick one-off implementation.

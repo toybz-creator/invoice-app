@@ -1,4 +1,4 @@
-import type { Models } from "appwrite";
+import type { Models } from "node-appwrite";
 
 export const invoiceStatuses = ["paid", "unpaid"] as const;
 
@@ -20,12 +20,9 @@ export type Invoice = {
   paidAt: string | null;
 };
 
-export type InvoiceDocumentData = Omit<
-  Invoice,
-  "id" | "$createdAt" | "$updatedAt"
->;
+export type InvoiceRowData = Omit<Invoice, "id" | "$createdAt" | "$updatedAt">;
 
-export type AppwriteInvoiceDocument = Models.Document & InvoiceDocumentData;
+export type AppwriteInvoiceRow = Models.Row & InvoiceRowData;
 
 export type InvoiceList = {
   invoices: Invoice[];

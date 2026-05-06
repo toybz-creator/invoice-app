@@ -1,6 +1,6 @@
 import { Permission, Role } from "node-appwrite";
 
-export function invoiceDocumentPermissions(userId: string) {
+export function invoiceRowPermissions(userId: string) {
   const owner = Role.user(userId);
 
   return [

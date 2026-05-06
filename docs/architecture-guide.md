@@ -150,19 +150,20 @@ Phase 2 Appwrite infrastructure is implemented:
 - `src/lib/appwrite/config.ts` validates public and server environment
   variables with Zod.
 - `src/lib/appwrite/client.ts` creates browser-safe Appwrite `Client`,
-  `Account`, and `Databases` helpers from the `appwrite` web SDK.
+  `Account`, and `TablesDB` helpers from the `appwrite` web SDK.
 - `src/lib/appwrite/admin.ts` is server-only and creates the admin client from
   `node-appwrite` with `APPWRITE_API_KEY`.
-- `src/lib/appwrite/permissions.ts` creates owner-only invoice document
+- `src/lib/appwrite/permissions.ts` creates owner-only invoice row
   permissions.
-- `src/lib/appwrite/database.ts` provides typed invoice document list, get,
-  create, update, and delete helpers that return typed success/error results.
-- `src/types/invoice.ts` defines the shared invoice model and Appwrite document
+- `src/lib/appwrite/database.ts` provides typed invoice row list, get, create,
+  update, and delete helpers that return typed success/error results through
+  Appwrite TablesDB.
+- `src/types/invoice.ts` defines the shared invoice model and Appwrite row
   shape.
 
 The database helper still expects Phase 4 server actions to perform form
 validation and server-owned financial calculations before persistence. The
-helper enforces document ownership for get/update/delete by comparing the stored
+helper enforces row ownership for get/update/delete by comparing the stored
 `userId` to the authenticated user ID passed by the caller.
 
 ### 3.3 Phase 3 Authentication Status
@@ -194,12 +195,15 @@ checks only for the cookie so it remains fast and Edge-compatible; server code
 must call `getAuthenticatedUser()` before trusted reads or mutations to verify
 that the cookie still maps to a valid Appwrite session.
 
-Session verification and Appwrite database operations use
+Session verification and Appwrite TablesDB operations use
 `withAppwriteRetry()` from `src/lib/appwrite/retry.ts` to retry transient
 network, timeout, rate-limit, and server errors before surfacing a user-facing
-failure state. `APP_ENV=development` enables `src/lib/logger.ts` diagnostics for
-auth, session, read, and mutation failures; production logs stay quiet unless
-future observability tooling chooses to report sanitized events explicitly.
+failure state. Invoice persistence uses the current TablesDB row APIs
+(`listRows`, `getRow`, `createRow`, `updateRow`, and `deleteRow`) instead of the
+deprecated Databases document methods. `APP_ENV=development` enables
+`src/lib/logger.ts` diagnostics for auth, session, read, and mutation failures;
+production logs stay quiet unless future observability tooling chooses to report
+sanitized events explicitly.
 
 The sign in and sign up screens were implemented from Maglo reference material.
 Required assets were captured locally under
@@ -244,9 +248,9 @@ Phase 4 and Phase 5 introduce the invoice domain and invoice workspace:
   owned.
 - `/invoices` is server-rendered for the authenticated user's invoice list and
   passes invoices into a client workspace for filters, forms, and table actions.
-- `/dashboard` now derives core metrics and due-date insights from the same
-  invoice list and finance/date utilities. Full chart components remain a later
-  dashboard phase.
+- `/dashboard` derives Phase 6 metrics, chart summaries, recent invoice
+  activity, and due-date insights from the same authenticated invoice row list
+  and finance/date utilities.
 
 The Phase 5 invoice UI was revalidated against the local reference images in
 `docs/ui-design/Invoices.png` and `docs/ui-design/invoice.png`. The Maglo mark asset remains local at
@@ -259,6 +263,27 @@ wide table. The implemented invoice edit flow uses an inline production panel
 rather than a separate detail route for this phase, preserving validation,
 accessibility, ownership checks, and responsive behavior.
 
+Phase 6 dashboard implementation:
+
+- `src/app/(dashboard)/dashboard/page.tsx` remains a Server Component that
+  resolves the authenticated Appwrite user, reads owner-scoped invoice rows, and
+  passes typed summary data into presentational dashboard components.
+- `src/features/dashboard/components/dashboard-charts.tsx` is the only
+  dashboard Client Component added in this phase because Recharts requires the
+  browser. It receives typed status and monthly summary points instead of
+  reading persisted data itself.
+- `src/features/dashboard/lib/insights.ts` owns dashboard-specific overdue and
+  due-soon grouping while reusing invoice due-date calculations.
+- Chart data remains centralized in `src/features/invoices/lib/finance.ts`
+  through `buildStatusSummary()` and `buildMonthlySummary()`.
+- Invoice server actions already revalidate `/dashboard`, so metric and chart
+  updates follow create, edit, delete, and paid/unpaid mutations. Phase 7 will
+  add realtime refresh for open clients.
+
+The dashboard UI was implemented from `docs/ui-design/Dashboard.png`. Browser
+visual verification still needs a configured authenticated Appwrite session so
+the protected route can load real invoice rows locally.
+
 ## 5. Appwrite Architecture
 
 ### 5.1 Services
@@ -266,8 +291,8 @@ accessibility, ownership checks, and responsive behavior.
 Use these Appwrite capabilities:
 
 - Auth: account creation, login, logout, session management.
-- Database: invoice documents.
-- Permissions: per-user document access.
+- Database: invoice rows.
+- Permissions: per-user row access.
 - Realtime: invoice create, update, and delete events.
 
 The browser uses the `appwrite` SDK. Server-only code uses `node-appwrite`
@@ -293,13 +318,13 @@ Expected variables:
 NEXT_PUBLIC_APPWRITE_ENDPOINT=
 NEXT_PUBLIC_APPWRITE_PROJECT_ID=
 NEXT_PUBLIC_APPWRITE_DATABASE_ID=
-NEXT_PUBLIC_APPWRITE_INVOICES_COLLECTION_ID=
+NEXT_PUBLIC_APPWRITE_INVOICES_TABLE_ID=
 APPWRITE_API_KEY=
 ```
 
 Only public IDs and endpoint values should use `NEXT_PUBLIC_*`. Server API keys must stay server-only.
 
-### 5.3 Invoice Collection
+### 5.3 Invoice Table
 
 Recommended fields:
 
@@ -316,9 +341,9 @@ status: enum("paid", "unpaid")
 paidAt: datetime/string/null
 ```
 
-The application uses Appwrite's built-in `$createdAt` and `$updatedAt` document
+The application uses Appwrite's built-in `$createdAt` and `$updatedAt` row
 metadata for invoice timestamps. Do not create custom `createdAt` or
-`updatedAt` collection attributes.
+`updatedAt` table columns.
 
 Recommended indexes:
 
@@ -330,11 +355,11 @@ Recommended indexes:
 
 ### 5.4 Permissions
 
-Each invoice document should be readable and writable only by its owner. The
-implemented `invoiceDocumentPermissions(userId)` grants owner-only read, update,
+Each invoice row should be readable and writable only by its owner. The
+implemented `invoiceRowPermissions(userId)` grants owner-only read, update,
 and delete permissions. Server actions must still verify ownership because
 client data cannot be trusted, and admin SDK calls can bypass Appwrite's
-document permission enforcement.
+row permission enforcement.
 
 ### 5.5 Session Handling
 
@@ -436,7 +461,7 @@ Server actions should follow this pattern:
 
 1. Read authenticated user.
 2. Parse and validate input.
-3. Authorize access to target document.
+3. Authorize access to target row.
 4. Calculate server-owned derived fields.
 5. Write to Appwrite.
 6. Revalidate affected routes.
@@ -495,6 +520,6 @@ Deployment checklist:
 
 - Vercel project connected to GitHub repository.
 - Environment variables configured in Vercel.
-- Appwrite project, database, collection, attributes, indexes, and permissions configured.
+- Appwrite project, database, table, columns, indexes, and permissions configured.
 - Production build passes.
 - Smoke test validates login, invoice creation, invoice update, dashboard metrics, and realtime refresh.

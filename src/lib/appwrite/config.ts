@@ -4,7 +4,7 @@ const publicConfigSchema = z.object({
   endpoint: z.string().url(),
   projectId: z.string().min(1),
   databaseId: z.string().min(1),
-  invoicesCollectionId: z.string().min(1),
+  invoicesTableId: z.string().min(1),
 });
 
 const serverConfigSchema = publicConfigSchema.extend({
@@ -24,6 +24,7 @@ export type AppwriteEnv = Record<string, string | undefined> & {
   NEXT_PUBLIC_APPWRITE_ENDPOINT?: string;
   NEXT_PUBLIC_APPWRITE_PROJECT_ID?: string;
   NEXT_PUBLIC_APPWRITE_DATABASE_ID?: string;
+  NEXT_PUBLIC_APPWRITE_INVOICES_TABLE_ID?: string;
   NEXT_PUBLIC_APPWRITE_INVOICES_COLLECTION_ID?: string;
   APPWRITE_API_KEY?: string;
 };
@@ -35,7 +36,9 @@ export function parsePublicAppwriteConfig(
     endpoint: env.NEXT_PUBLIC_APPWRITE_ENDPOINT,
     projectId: env.NEXT_PUBLIC_APPWRITE_PROJECT_ID,
     databaseId: env.NEXT_PUBLIC_APPWRITE_DATABASE_ID,
-    invoicesCollectionId: env.NEXT_PUBLIC_APPWRITE_INVOICES_COLLECTION_ID,
+    invoicesTableId:
+      env.NEXT_PUBLIC_APPWRITE_INVOICES_TABLE_ID ??
+      env.NEXT_PUBLIC_APPWRITE_INVOICES_COLLECTION_ID,
   });
 }
 

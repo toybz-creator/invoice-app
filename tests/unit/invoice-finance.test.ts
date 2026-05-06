@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   aggregateDashboardMetrics,
+  buildMonthlySummary,
+  buildStatusSummary,
   calculateInvoiceFinancials,
   calculateInvoiceTotal,
   calculateVatAmount,
@@ -60,5 +62,37 @@ describe("invoice finance utilities", () => {
       paidCount: 1,
       unpaidCount: 1,
     });
+  });
+
+  it("builds typed status and monthly chart summaries from paid invoices", () => {
+    const unpaidInvoice: Invoice = {
+      ...baseInvoice,
+      id: "invoice-2",
+      status: "unpaid",
+      total: 2150,
+      vatAmount: 150,
+      paidAt: null,
+    };
+    const paidNextMonth: Invoice = {
+      ...baseInvoice,
+      id: "invoice-3",
+      total: 3225,
+      vatAmount: 225,
+      paidAt: "2026-06-10T00:00:00.000Z",
+    };
+
+    expect(
+      buildStatusSummary([baseInvoice, unpaidInvoice, paidNextMonth]),
+    ).toEqual([
+      { status: "paid", count: 2, total: 4300 },
+      { status: "unpaid", count: 1, total: 2150 },
+    ]);
+
+    expect(
+      buildMonthlySummary([paidNextMonth, unpaidInvoice, baseInvoice]),
+    ).toEqual([
+      { month: "2026-05", revenue: 1075, vat: 75 },
+      { month: "2026-06", revenue: 3225, vat: 225 },
+    ]);
   });
 });

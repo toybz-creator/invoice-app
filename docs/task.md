@@ -83,9 +83,9 @@ Deliverables:
 
 - Create or document Appwrite project.
 - Configure Auth email/password.
-- Create database and invoices collection.
-- Add required attributes and indexes.
-- Configure document permission strategy.
+- Create database and invoices table.
+- Add required columns and indexes.
+- Configure row permission strategy.
 
 Done when:
 
@@ -95,7 +95,7 @@ Done when:
 Implementation notes:
 
 - `README.md` documents required environment variables, Auth email/password,
-  invoice collection attributes, indexes, and owner-only document permissions.
+  invoice table columns, indexes, and owner-only row permissions.
 
 ### TASK-005: Build Appwrite Client Modules
 
@@ -269,6 +269,10 @@ Done when:
 
 ## Phase 6: Dashboard
 
+Status: Implemented. Browser visual verification against
+`docs/ui-design/Dashboard.png` still requires an authenticated local Appwrite
+session; lint, format, typecheck, and Vitest checks pass.
+
 ### TASK-015: Build Dashboard Metrics
 
 Deliverables:
@@ -405,7 +409,7 @@ Done when:
 Deliverables:
 
 - Update `docs/architecture-guide.md` with final folder structure.
-- Document Appwrite collection schema and indexes.
+- Document Appwrite table schema and indexes.
 - Document realtime implementation choice.
 - Document testing approach.
 
