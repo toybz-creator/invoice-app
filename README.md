@@ -5,7 +5,7 @@ TailwindCSS, and Vercel.
 
 ## Current Status
 
-Phase 1 through Phase 3 are implemented:
+Phase 1 through Phase 5 are implemented:
 
 - Next.js App Router with TypeScript strict mode and `src/`.
 - TailwindCSS v4 and ShadCN/UI initialized.
@@ -27,9 +27,18 @@ Phase 1 through Phase 3 are implemented:
 - Typed invoice document helpers with owner-scoped permissions.
 - Reproducible Appwrite database, collection, attribute, index, and permission
   setup notes.
+- Invoice validation schemas, finance utilities, dashboard aggregation, due-date
+  utilities, and Naira formatting.
+- Invoice create, edit, delete, and paid/unpaid status server actions with
+  authenticated ownership checks, server-side derived totals, and route
+  revalidation.
+- Server-loaded invoice list and dashboard metric routes.
+- Invoice creation/edit forms, responsive invoice table, all/paid/unpaid
+  Zustand UI filters, mobile invoice cards, status controls, delete
+  confirmation, empty/Appwrite-load-error states, and toast feedback.
 
-Invoice server actions, realtime subscriptions, dashboard metrics, and invoice
-Figma-fidelity UI implementation phases are still pending.
+Realtime subscriptions, full dashboard charts, production e2e flows, and Vercel
+deployment are still pending later phases.
 
 ## Prerequisites
 
@@ -202,9 +211,15 @@ run.
 
 Phase 3 used the Figma workflow for the sign in node `122:1782` and sign up
 node `134:2419`, including structured design context, screenshots, and local
-asset capture. The shared auth screen uses `public/auth-hero.png`,
-`public/maglo-mark.svg`, and `public/auth-underline.svg` instead of short-lived
-Figma URLs.
+asset capture. Phase 5 now uses the checked-in `docs/ui-design/Invoices.png`
+and `docs/ui-design/invoice.png` references for invoice visual validation
+without Figma MCP calls, keeps the Maglo mark at
+`public/figma/maglo-exclude.svg`, and translates the sidebar, top bar, search,
+create button, filter, table hierarchy, compact status badges, action
+placement, mobile cards, and in-workspace load-error state into the responsive
+invoice workspace. The shared auth screen uses
+`public/auth-hero.png`, `public/maglo-mark.svg`, and
+`public/auth-underline.svg` instead of short-lived Figma URLs.
 
 Browser verification is represented by the Playwright route protection smoke
 test. End-to-end credential submission still requires configured Appwrite

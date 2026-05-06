@@ -45,7 +45,6 @@ export async function getAuthenticatedUser(): Promise<Models.User<Models.Default
   try {
     return await createSessionAccount(sessionSecret).get();
   } catch {
-    await clearSessionCookie();
     return null;
   }
 }

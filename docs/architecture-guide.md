@@ -208,6 +208,44 @@ Phase 3 introduces Client Components for authentication forms only. Server
 actions remain the trusted auth mutation boundary, and the auth route files stay
 thin by delegating reusable behavior to `src/features/auth`.
 
+Phase 4 and Phase 5 introduce the invoice domain and invoice workspace:
+
+- `src/features/invoices/schemas/invoice.schema.ts` owns create, edit, delete,
+  and status validation schemas shared by client forms and server actions.
+- `src/features/invoices/lib/finance.ts` owns VAT, invoice total, Naira
+  formatting, dashboard metric aggregation, and chart-ready summary utilities.
+  The current Appwrite schema stores decimal number fields, but rounding is
+  isolated here so a future minor-unit storage migration can happen behind this
+  boundary.
+- `src/features/invoices/lib/dates.ts` owns due-date countdown, due-soon, and
+  overdue behavior using local-day comparisons to avoid obvious timezone drift
+  in user-facing labels.
+- `src/app/actions/invoice.actions.ts` is the trusted mutation boundary for
+  create, edit, delete, and paid/unpaid updates. Every action resolves the
+  authenticated Appwrite user, validates input, ignores client-provided derived
+  or ownership fields, recalculates VAT/total server-side, uses owner-scoped
+  Appwrite helpers, and revalidates `/dashboard` and `/invoices`.
+- `src/stores/invoice-ui.store.ts` stores only UI state: current filter, search,
+  create/edit/delete panel state. Persisted invoices remain Appwrite/server
+  owned.
+- `/invoices` is server-rendered for the authenticated user's invoice list and
+  passes invoices into a client workspace for filters, forms, and table actions.
+- `/dashboard` now derives core metrics and due-date insights from the same
+  invoice list and finance/date utilities. Full chart components remain a later
+  dashboard phase.
+
+The Phase 5 invoice UI was revalidated against the local reference images in
+`docs/ui-design/Invoices.png` and `docs/ui-design/invoice.png` for this pass,
+without Figma MCP calls. The Maglo mark asset remains local at
+`public/figma/maglo-exclude.svg`. The invoice workspace preserves the
+Maglo sidebar/topbar/table hierarchy, search, create button, filters, compact
+rows, paid/unpaid badge treatment, and accessible actions. Appwrite load
+failures now render inside the designed workspace instead of replacing the page
+with a standalone error card, and mobile uses invoice cards instead of a forced
+wide table. The implemented invoice edit flow uses an inline production panel
+rather than a separate detail route for this phase, preserving validation,
+accessibility, ownership checks, and responsive behavior.
+
 ## 5. Appwrite Architecture
 
 ### 5.1 Services
@@ -295,8 +333,10 @@ environments must set the project ID.
 
 The route proxy uses the cookie for route gating only. Any server action that
 reads or mutates user-owned data must call the server-only session helper to
-resolve the authenticated Appwrite user and must clear the cookie if Appwrite
-rejects the session.
+resolve the authenticated Appwrite user. Server Component reads treat rejected
+Appwrite sessions as anonymous without mutating cookies, because Next.js only
+allows cookie deletion in Server Actions or Route Handlers. Logout remains the
+explicit cookie-clearing path.
 
 ## 6. Financial Domain Rules
 

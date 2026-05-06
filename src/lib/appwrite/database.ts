@@ -37,8 +37,8 @@ function mapInvoiceDocument(document: AppwriteInvoiceDocument): Invoice {
     total: document.total,
     dueDate: document.dueDate,
     status: document.status,
-    createdAt: document.createdAt,
-    updatedAt: document.updatedAt,
+    $createdAt: document.$createdAt,
+    $updatedAt: document.$updatedAt,
     paidAt: document.paidAt,
   };
 }
@@ -126,6 +126,7 @@ export async function createInvoiceDocument(
 
     return { ok: true, data: mapInvoiceDocument(document) };
   } catch (error) {
+    console.log(toAppwriteError(error));
     return toAppwriteError(error);
   }
 }

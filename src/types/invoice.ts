@@ -15,8 +15,8 @@ export type Invoice = {
   total: number;
   dueDate: string;
   status: InvoiceStatus;
-  createdAt: string;
-  updatedAt: string;
+  $createdAt: string;
+  $updatedAt: string;
   paidAt: string | null;
 };
 

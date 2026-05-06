@@ -167,6 +167,10 @@ Done when:
 
 ## Phase 4: Invoice Domain
 
+Status: Implemented. Server actions and domain utilities are complete for the
+current decimal-number Appwrite schema. Minor-unit storage remains isolated for
+a future migration.
+
 ### TASK-009: Define Invoice Types and Validation
 
 Deliverables:
@@ -215,6 +219,12 @@ Done when:
 - Actions return typed success/error results.
 
 ## Phase 5: Invoice UI
+
+Status: Implemented. The invoice list UI is aligned to the local
+`docs/ui-design/Invoices.png` and `docs/ui-design/invoice.png` references for
+this pass, without Figma MCP validation. The invoice shell, controls, responsive
+desktop table, mobile cards, forms, filters, destructive confirmation, empty
+state, and Appwrite load-error state are translated into the app.
 
 ### TASK-012: Build Invoice Creation Form
 
