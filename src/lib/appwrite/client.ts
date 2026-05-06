@@ -1,4 +1,4 @@
-import { Account, Client, TablesDB } from "appwrite";
+import { Account, Client, Realtime, TablesDB } from "appwrite";
 
 import { getPublicAppwriteConfig } from "@/lib/appwrite/config";
 
@@ -21,4 +21,8 @@ export function getBrowserAccount() {
 
 export function getBrowserTablesDB() {
   return new TablesDB(getBrowserAppwriteClient());
+}
+
+export function getBrowserRealtime() {
+  return new Realtime(getBrowserAppwriteClient());
 }

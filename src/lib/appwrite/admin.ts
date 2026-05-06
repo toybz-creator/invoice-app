@@ -10,7 +10,8 @@ export function createAdminAppwriteClient() {
   return new Client()
     .setEndpoint(config.endpoint)
     .setProject(config.projectId)
-    .setKey(config.apiKey);
+    .setKey(config.apiKey)
+    .setSelfSigned(true); // Allow self-signed certs if needed for local proxies
 }
 
 export function createAdminTablesDB() {
@@ -31,7 +32,8 @@ export function createSessionAppwriteClient(sessionSecret: string) {
   return new Client()
     .setEndpoint(config.endpoint)
     .setProject(config.projectId)
-    .setSession(sessionSecret);
+    .setSession(sessionSecret)
+    .setSelfSigned(true);
 }
 
 export function createSessionAccount(sessionSecret: string) {

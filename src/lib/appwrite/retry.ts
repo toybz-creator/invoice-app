@@ -39,7 +39,7 @@ function isRetryableAppwriteError(error: unknown) {
 
 export async function withAppwriteRetry<T>(
   operation: () => Promise<T>,
-  { attempts = 2, context = {}, label }: RetryOptions,
+  { attempts = 3, context = {}, label }: RetryOptions,
 ) {
   let lastError: unknown;
 
@@ -54,7 +54,8 @@ export async function withAppwriteRetry<T>(
         break;
       }
 
-      await wait(150 * attempt);
+      // Exponential backoff: 200ms, 400ms, 800ms...
+      await wait(Math.pow(2, attempt) * 100);
     }
   }
 

@@ -242,15 +242,20 @@ Phase 4 and Phase 5 introduce the invoice domain and invoice workspace:
   create, edit, delete, and paid/unpaid updates. Every action resolves the
   authenticated Appwrite user, validates input, ignores client-provided derived
   or ownership fields, recalculates VAT/total server-side, uses owner-scoped
-  Appwrite helpers, and revalidates `/dashboard` and `/invoices`.
+  Appwrite helpers, and returns the changed invoice row for browser-side sync.
 - `src/stores/invoice-ui.store.ts` stores only UI state: current filter, search,
-  create/edit/delete panel state. Persisted invoices remain Appwrite/server
-  owned.
-- `/invoices` is server-rendered for the authenticated user's invoice list and
-  passes invoices into a client workspace for filters, forms, and table actions.
+  create/edit/delete panel state.
+- `src/stores/invoice-data.store.ts` stores the browser-session invoice
+  snapshot after the first authenticated server read. Appwrite remains the
+  persisted source of truth; this store is a volatile synchronized view that is
+  updated by server action results and Appwrite Realtime events.
+- `src/app/(dashboard)/layout.tsx` verifies the authenticated user and performs
+  the initial owner-scoped invoice read once for the authenticated app shell.
+  `/dashboard` and `/invoices` render client workspaces from the shared invoice
+  store so moving between the two screens does not refetch rows from Appwrite.
 - `/dashboard` derives Phase 6 metrics, chart summaries, recent invoice
-  activity, and due-date insights from the same authenticated invoice row list
-  and finance/date utilities.
+  activity, and due-date insights from the shared invoice snapshot and the same
+  finance/date utilities used by invoice workflows.
 
 The Phase 5 invoice UI was revalidated against the local reference images in
 `docs/ui-design/Invoices.png` and `docs/ui-design/invoice.png`. The Maglo mark asset remains local at
@@ -265,9 +270,11 @@ accessibility, ownership checks, and responsive behavior.
 
 Phase 6 dashboard implementation:
 
-- `src/app/(dashboard)/dashboard/page.tsx` remains a Server Component that
-  resolves the authenticated Appwrite user, reads owner-scoped invoice rows, and
-  passes typed summary data into presentational dashboard components.
+- `src/app/(dashboard)/dashboard/page.tsx` stays thin and renders the
+  `DashboardWorkspace` client component. The authenticated layout owns the
+  initial Appwrite read, and the workspace recomputes dashboard summaries from
+  `src/stores/invoice-data.store.ts` as local mutations and realtime events
+  arrive.
 - `src/features/dashboard/components/dashboard-charts.tsx` is the only
   dashboard Client Component added in this phase because Recharts requires the
   browser. It receives typed status and monthly summary points instead of
@@ -276,9 +283,10 @@ Phase 6 dashboard implementation:
   due-soon grouping while reusing invoice due-date calculations.
 - Chart data remains centralized in `src/features/invoices/lib/finance.ts`
   through `buildStatusSummary()` and `buildMonthlySummary()`.
-- Invoice server actions already revalidate `/dashboard`, so metric and chart
-  updates follow create, edit, delete, and paid/unpaid mutations. Phase 7 will
-  add realtime refresh for open clients.
+- Invoice server action results update the shared invoice store immediately, so
+  metric and chart updates follow create, edit, delete, and paid/unpaid
+  mutations without a route refresh. Phase 7 realtime applies the same store
+  updates for changes received from other browser tabs or clients.
 
 The dashboard UI was implemented from `docs/ui-design/Dashboard.png`. Browser
 visual verification still needs a configured authenticated Appwrite session so
@@ -377,6 +385,12 @@ Appwrite sessions as anonymous without mutating cookies, because Next.js only
 allows cookie deletion in Server Actions or Route Handlers. Logout remains the
 explicit cookie-clearing path.
 
+`getAuthenticatedUser()` uses React's request memoization through `cache()` so
+multiple server components or server actions within the same render/action pass
+share one Appwrite session verification. It intentionally does not use a
+process-wide object cache because Appwrite sessions can expire or be revoked
+outside the current Node.js process.
+
 ## 6. Financial Domain Rules
 
 All persisted calculations must happen server-side.
@@ -419,13 +433,15 @@ Good candidates:
 - Dialog open state.
 - Sidebar collapse state.
 - Realtime connection status.
+- A volatile invoice snapshot seeded by the authenticated layout and kept in
+  sync from action results plus Appwrite Realtime events.
 - Temporary chart preference.
 
 Avoid:
 
-- Making Zustand the database cache without explicit synchronization.
+- Making Zustand the persisted database source of truth.
 - Storing authenticated user secrets.
-- Storing data that must survive refresh unless intentionally persisted.
+- Storing invoice data that must survive browser reloads.
 
 ## 9. Realtime Architecture
 
@@ -449,8 +465,10 @@ The hook should:
 
 - Subscribe to Appwrite invoice changes.
 - Filter or verify events by user.
-- Trigger route refresh or update a local synchronized view.
+- Update the local synchronized invoice view.
 - Expose connection status.
+- Reconnect with backoff after subscription setup or callback failures and when
+  the browser comes back online or visible.
 - Clean up subscriptions.
 
 SSE and Socket adapters should be introduced behind the same realtime boundary when needed. For the initial release, Appwrite Realtime may handle invoice updates directly while SSE/socket files document extension points or power non-invoice events.

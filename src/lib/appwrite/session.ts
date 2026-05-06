@@ -2,6 +2,7 @@ import "server-only";
 
 import { cookies } from "next/headers";
 import type { Models } from "node-appwrite";
+import { cache } from "react";
 
 import { createSessionAccount } from "@/lib/appwrite/admin";
 import { withAppwriteRetry } from "@/lib/appwrite/retry";
@@ -37,20 +38,22 @@ export async function getSessionSecret() {
   return cookieStore.get(getCurrentSessionCookieName())?.value ?? null;
 }
 
-export async function getAuthenticatedUser(): Promise<Models.User<Models.DefaultPreferences> | null> {
-  const sessionSecret = await getSessionSecret();
+export const getAuthenticatedUser = cache(
+  async (): Promise<Models.User<Models.DefaultPreferences> | null> => {
+    const sessionSecret = await getSessionSecret();
 
-  if (!sessionSecret) {
-    return null;
-  }
+    if (sessionSecret === null) {
+      return null;
+    }
 
-  try {
-    return await withAppwriteRetry(
-      () => createSessionAccount(sessionSecret).get(),
-      { label: "Verify Appwrite session" },
-    );
-  } catch (error) {
-    logDevelopmentError("Authenticated session could not be verified", error);
-    return null;
-  }
-}
+    try {
+      return await withAppwriteRetry(
+        () => createSessionAccount(sessionSecret).get(),
+        { label: "Verify Appwrite session" },
+      );
+    } catch (error) {
+      logDevelopmentError("Authenticated session could not be verified", error);
+      return null;
+    }
+  },
+);

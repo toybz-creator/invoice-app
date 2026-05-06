@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useTransition } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
@@ -21,6 +20,7 @@ import {
   invoiceFormSchema,
   type InvoiceFormValues,
 } from "@/features/invoices/schemas/invoice.schema";
+import { useInvoiceDataStore } from "@/stores/invoice-data.store";
 import type { Invoice } from "@/types/invoice";
 
 type InvoiceFormProps = {
@@ -47,8 +47,8 @@ function FieldError({ message }: { message?: string }) {
 }
 
 export function InvoiceForm({ invoice, onSaved, onCancel }: InvoiceFormProps) {
-  const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const upsertInvoice = useInvoiceDataStore((state) => state.upsertInvoice);
   const {
     register,
     handleSubmit,
@@ -118,7 +118,7 @@ export function InvoiceForm({ invoice, onSaved, onCancel }: InvoiceFormProps) {
       }
 
       toast.success(result.message);
-      router.refresh();
+      upsertInvoice(result.data);
 
       if (!invoice) {
         reset(defaultValues);

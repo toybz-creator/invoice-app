@@ -51,12 +51,42 @@ export function parseServerAppwriteConfig(
   });
 }
 
-export function getPublicAppwriteConfig() {
-  return parsePublicAppwriteConfig(process.env);
+export function getPublicAppwriteConfig(): PublicAppwriteConfig {
+  const env = {
+    endpoint: process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT,
+    projectId: process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID,
+    databaseId: process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID,
+    invoicesTableId:
+      process.env.NEXT_PUBLIC_APPWRITE_INVOICES_TABLE_ID ??
+      process.env.NEXT_PUBLIC_APPWRITE_INVOICES_COLLECTION_ID,
+  };
+
+  const parsed = publicConfigSchema.safeParse(env);
+
+  if (!parsed.success) {
+    throw new Error(formatAppwriteConfigError(parsed.error));
+  }
+
+  return parsed.data;
 }
 
-export function getServerAppwriteConfig() {
-  return parseServerAppwriteConfig(process.env);
+export function getServerAppwriteConfig(): ServerAppwriteConfig {
+  const env = {
+    ...getPublicAppwriteConfig(),
+    apiKey: process.env.APPWRITE_API_KEY,
+  };
+
+  const parsed = serverConfigSchema.safeParse(env);
+
+  if (!parsed.success) {
+    throw new Error(formatAppwriteConfigError(parsed.error));
+  }
+
+  if (process.env.NODE_ENV === "development") {
+    console.log(`[Appwrite Config] Using endpoint: ${parsed.data.endpoint}`);
+  }
+
+  return parsed.data;
 }
 
 export function parseAppEnvironment(env: AppwriteEnv): AppEnvironment {

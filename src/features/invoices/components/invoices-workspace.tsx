@@ -20,7 +20,6 @@ import {
   XCircle,
 } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { type ReactNode, useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 
@@ -29,6 +28,7 @@ import {
   updateInvoiceStatusAction,
 } from "@/app/actions/invoice.actions";
 import { Button } from "@/components/ui/button";
+import { useInvoiceSnapshot } from "@/features/invoices/components/invoice-data-provider";
 import { InvoiceForm } from "@/features/invoices/components/invoice-form";
 import { StatusBadge } from "@/features/invoices/components/status-badge";
 import {
@@ -45,11 +45,6 @@ import {
   useInvoiceUiStore,
 } from "@/stores/invoice-ui.store";
 import type { Invoice } from "@/types/invoice";
-
-type InvoicesWorkspaceProps = {
-  invoices: Invoice[];
-  loadError?: string;
-};
 
 const filters: Array<{ label: string; value: InvoiceFilter }> = [
   { label: "All", value: "all" },
@@ -606,13 +601,11 @@ function InvoiceActionMenu({
   );
 }
 
-export function InvoicesWorkspace({
-  invoices,
-  loadError,
-}: InvoicesWorkspaceProps) {
-  const router = useRouter();
+export function InvoicesWorkspace() {
   const [isPending, startTransition] = useTransition();
   const [filterOpen, setFilterOpen] = useState(false);
+  const { invoices, loadError, upsertInvoice, removeInvoice, realtimeStatus } =
+    useInvoiceSnapshot();
   const filter = useInvoiceUiStore((state) => state.filter);
   const search = useInvoiceUiStore((state) => state.search);
   const page = useInvoiceUiStore((state) => state.page);
@@ -692,8 +685,8 @@ export function InvoicesWorkspace({
       }
 
       toast.success(result.message);
+      upsertInvoice(result.data);
       closeActionMenu();
-      router.refresh();
     });
   }
 
@@ -711,8 +704,8 @@ export function InvoicesWorkspace({
       }
 
       toast.success(result.message);
+      removeInvoice(result.data.id);
       closeDelete();
-      router.refresh();
     });
   }
 
@@ -723,6 +716,9 @@ export function InvoicesWorkspace({
           <h1 className="text-[25px] font-semibold tracking-normal text-[#1b212d]">
             Invoices
           </h1>
+          <p className="mt-2 text-sm text-[#929eae]">
+            Realtime sync is {realtimeStatus}.
+          </p>
           <label className="relative mt-7 block w-full md:w-[225px]">
             <span className="sr-only">Search invoices</span>
             <Search className="absolute left-[18px] top-1/2 size-5 -translate-y-1/2 text-[#1b212d]" />

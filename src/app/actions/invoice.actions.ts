@@ -1,7 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-
 import { calculateInvoiceFinancials } from "@/features/invoices/lib/finance";
 import {
   createInvoiceSchema,
@@ -44,11 +42,6 @@ async function requireAuthenticatedUser() {
   return user;
 }
 
-function revalidateInvoiceViews() {
-  revalidatePath("/dashboard");
-  revalidatePath("/invoices");
-}
-
 export async function createInvoiceAction(
   input: unknown,
 ): Promise<InvoiceActionResult> {
@@ -88,8 +81,6 @@ export async function createInvoiceAction(
       "The invoice could not be created. Please try again.",
     );
   }
-
-  revalidateInvoiceViews();
 
   return {
     ok: true,
@@ -140,8 +131,6 @@ export async function editInvoiceAction(
     );
   }
 
-  revalidateInvoiceViews();
-
   return {
     ok: true,
     data: result.data,
@@ -177,8 +166,6 @@ export async function deleteInvoiceAction(
         : "The invoice could not be deleted. Please try again.",
     );
   }
-
-  revalidateInvoiceViews();
 
   return {
     ok: true,
@@ -218,8 +205,6 @@ export async function updateInvoiceStatusAction(
         : "The invoice status could not be updated. Please try again.",
     );
   }
-
-  revalidateInvoiceViews();
 
   return {
     ok: true,
